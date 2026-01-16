@@ -39,24 +39,12 @@
         .success { color: #2e7d32; }
         .notice-text { color: #d32f2f; font-weight: bold; margin: 10px 0; font-size: 14px; }
 
-        /* 列印專用修正樣式 */
         @media print {
             body { display: block; background: white; padding: 0; margin: 0; }
-            .admin-panel, button { display: none !important; } /* 隱藏編輯面板與所有按鈕 */
-            .chart-container { 
-                display: block; 
-                height: auto; 
-                overflow: visible; 
-                width: 100%; 
-            }
-            .canvas, .summary-panel { 
-                border: none; 
-                box-shadow: none; 
-                width: 100%; 
-                margin: 0 auto;
-                page-break-after: always; /* 讓地圖與明細分頁列印，比較美觀 */
-            }
-            .canvas { transform: scale(0.9); transform-origin: top center; } /* 稍微縮小以確保能塞進 A4 */
+            .admin-panel, button { display: none !important; }
+            .chart-container { display: block; height: auto; overflow: visible; width: 100%; }
+            .canvas, .summary-panel { border: none; box-shadow: none; width: 100%; margin: 0 auto; page-break-after: always; }
+            .canvas { transform: scale(0.9); transform-origin: top center; }
         }
     </style>
 </head>
@@ -245,7 +233,7 @@ CDC,4
         { name: "副主任", count: 1 },
         { name: "簡任技正", count: 2 },
         { name: "專門委員", count: 1, keys: ["專門委員","專委"] },
-        { name: "前主祕余建勳", count: 2, keys: ["余建勳"] }
+        { name: "前主祕余建勳", count: 2, keys: ["余建勳"] },
         { name: "航安科", count: 24, keys: ["航安"] }, 
         { name: "海技科", count: 23, keys: ["海技"] }, 
         { name: "港政科", count: 16, keys: ["港政"] },
@@ -260,8 +248,7 @@ CDC,4
         { name: "政風", count: 1 },
         { name: "消防", count: 1 }, 
         { name: "倉庫公會", count: 1, keys: ["倉庫"] }, 
-        { name: "理貨公會", count: 1, keys: ["理貨"] },
-
+        { name: "理貨公會", count: 1, keys: ["理貨"] }
     ];
 
     function updateAll() {
