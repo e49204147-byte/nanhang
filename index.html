@@ -2,8 +2,9 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>南航座位管理工具-115年正式版</title>
+    <title>南部航務中心馬到成功員工聯誼暨CIQS茶會人員配置圖</title>
     <style>
+        /* 螢幕顯示樣式 */
         body { font-family: "Microsoft JhengHei", sans-serif; background: #f5f5f5; display: flex; padding: 20px; gap: 20px; margin: 0; }
         .admin-panel { width: 340px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 95vh; display: flex; flex-direction: column; }
         textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 10px; border: 1px solid #ccc; font-size: 13px; resize: none; border-radius: 4px; }
@@ -37,7 +38,26 @@
         .error { color: #d32f2f; font-weight: bold; background: #fffde7; }
         .success { color: #2e7d32; }
         .notice-text { color: #d32f2f; font-weight: bold; margin: 10px 0; font-size: 14px; }
-        @media print { .admin-panel, .print-btn { display: none; } body { padding: 0; } .canvas, .summary-panel { border: none; box-shadow: none; } }
+
+        /* 列印專用修正樣式 */
+        @media print {
+            body { display: block; background: white; padding: 0; margin: 0; }
+            .admin-panel, button { display: none !important; } /* 隱藏編輯面板與所有按鈕 */
+            .chart-container { 
+                display: block; 
+                height: auto; 
+                overflow: visible; 
+                width: 100%; 
+            }
+            .canvas, .summary-panel { 
+                border: none; 
+                box-shadow: none; 
+                width: 100%; 
+                margin: 0 auto;
+                page-break-after: always; /* 讓地圖與明細分頁列印，比較美觀 */
+            }
+            .canvas { transform: scale(0.9); transform-origin: top center; } /* 稍微縮小以確保能塞進 A4 */
+        }
     </style>
 </head>
 <body>
@@ -278,8 +298,6 @@ CDC,4
         });
 
         const indexContainer = document.getElementById('indexContainer'); indexContainer.innerHTML = '';
-        
-        // 設定顯示順序：主桌排在第一位
         const displayOrder = ['主', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
         
         displayOrder.forEach(key => {
