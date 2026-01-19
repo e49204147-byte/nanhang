@@ -10,9 +10,35 @@
         .admin-panel { 
             width: 340px; background: #fff; padding: 20px; border-radius: 8px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 95vh; 
-            display: flex; flex-direction: column; transition: 0.3s;
+            display: flex; flex-direction: column; transition: transform 0.3s ease;
+            position: relative; z-index: 10;
         }
         
+        /* 收折後的樣式 */
+        .admin-panel.collapsed {
+            transform: translateX(-380px); /* 移出畫面 */
+            position: absolute; /* 避免佔位 */
+        }
+
+        /* 收折按鈕 (在面板內) */
+        .collapse-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: #eee; border: none; border-radius: 50%;
+            width: 30px; height: 30px; cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .collapse-btn:hover { background: #ddd; }
+
+        /* 展開按鈕 (懸浮在左上角) */
+        .expand-btn {
+            position: fixed; top: 20px; left: 0; z-index: 20;
+            background: #333; color: white; border: none;
+            padding: 10px 15px 10px 5px; border-radius: 0 50px 50px 0;
+            cursor: pointer; font-weight: bold; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+        }
+        .expand-btn.hidden { left: -50px; } /* 面板打開時隱藏此按鈕 */
+
         textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 10px; border: 1px solid #ccc; font-size: 13px; resize: none; border-radius: 4px; box-sizing: border-box; }
         .stats-summary { margin-top: 10px; padding: 10px; background: #f1f8e9; border-radius: 4px; font-size: 13px; font-weight: bold; border-left: 4px solid #4caf50; }
         
@@ -20,9 +46,10 @@
         .chart-container { 
             flex-grow: 1; display: flex; flex-direction: column; align-items: center; 
             gap: 30px; overflow-y: auto; height: 95vh; transition: 0.3s;
+            width: 100%; /* 確保收折後能滿版 */
         }
         
-        .canvas { width: 950px; background: white; border: 2px solid #333; padding: 40px; position: relative; flex-shrink: 0; }
+        .canvas { width: 950px; background: white; border: 2px solid #333; padding: 40px; position: relative; flex-shrink: 0; margin-top: 20px;}
         .top-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
         .restroom-box { border: 1px solid #000; padding: 8px; width: 60px; text-align: center; font-weight: bold; font-size: 13px; }
         .stage-box { background: red; color: white; padding: 15px 90px; font-weight: bold; border: 1px solid #000; font-size: 22px; }
@@ -54,58 +81,9 @@
         .success { color: #2e7d32; font-weight: bold; }
         .notice-text { color: #d32f2f; font-weight: 900; margin: 10px 0; font-size: 15px; }
 
-        /* --- 投影模式切換按鈕 --- */
-        .toggle-btn {
-            position: fixed; top: 10px; right: 20px; z-index: 1000;
-            padding: 10px 20px; background: #333; color: white;
-            border: none; border-radius: 30px; cursor: pointer;
-            font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: 0.3s;
-        }
-        .toggle-btn:hover { background: #000; transform: scale(1.05); }
-
-        /* --- 投影模式樣式 (修正版) --- */
-        /* 1. 只隱藏左側控制台 */
-        body.presentation-mode .admin-panel {
-            display: none !important;
-        }
-        
-        /* 2. 右側區域設定：允許捲動、寬度滿版 */
-        body.presentation-mode .chart-container {
-            width: 100%; 
-            max-width: 100%; 
-            height: 100vh;
-            justify-content: flex-start; /* 改為從頭開始排列，避免中間對齊導致上方被切掉 */
-            overflow-y: auto; /* 關鍵：允許垂直捲動 */
-            padding-bottom: 50px; /* 底部留白 */
-        }
-
-        /* 3. 背景與縮放 */
-        body.presentation-mode {
-            background: #fff; 
-            padding: 0;
-        }
-        body.presentation-mode .canvas {
-            border: none;
-            box-shadow: none;
-            margin-top: 20px;
-            /* 稍微縮小一點讓視野好一點，但保持可讀性 */
-            transform: scale(0.95); 
-            transform-origin: top center;
-        }
-        
-        /* 4. 隱藏捲軸但保留功能 (美觀) */
-        body.presentation-mode .chart-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        body.presentation-mode .chart-container::-webkit-scrollbar-thumb {
-            background: #ccc; 
-            border-radius: 4px;
-        }
-
         @media print {
             body { display: block; background: white; padding: 0; margin: 0; }
-            .admin-panel, .toggle-btn, button { display: none !important; }
+            .admin-panel, .expand-btn, button { display: none !important; }
             .chart-container { display: block; height: auto; overflow: visible; width: 100%; }
             .canvas, .summary-panel { border: none; box-shadow: none; width: 100%; margin: 0 auto; page-break-after: always; }
             .canvas { transform: scale(0.85); transform-origin: top center; }
@@ -114,9 +92,10 @@
 </head>
 <body>
 
-<button class="toggle-btn" onclick="togglePresentation()">📺 切換投影模式</button>
+<button class="expand-btn hidden" onclick="toggleSidebar(true)">⚙️ 設定</button>
 
-<div class="admin-panel">
+<div class="admin-panel" id="adminPanel">
+    <button class="collapse-btn" onclick="toggleSidebar(false)">❮</button>
     <h3>名單資料庫標記 (Tag)</h3>
     <textarea id="dataInput" oninput="updateAll()" placeholder="格式：姓名,桌號">局長葉協隆,主
 主任張博彥,主
@@ -311,16 +290,16 @@ CR驗船中心,2
 </div>
 
 <script>
-    // 切換投影模式 JS
-    function togglePresentation() {
-        document.body.classList.toggle('presentation-mode');
-        const btn = document.querySelector('.toggle-btn');
-        if (document.body.classList.contains('presentation-mode')) {
-            btn.innerText = "🔧 回到編輯模式";
-            btn.style.opacity = "0.3"; 
+    // 切換側邊欄的 JS
+    function toggleSidebar(show) {
+        const panel = document.getElementById('adminPanel');
+        const btn = document.querySelector('.expand-btn');
+        if (show) {
+            panel.classList.remove('collapsed');
+            btn.classList.add('hidden');
         } else {
-            btn.innerText = "📺 切換投影模式";
-            btn.style.opacity = "1";
+            panel.classList.add('collapsed');
+            btn.classList.remove('hidden');
         }
     }
 
