@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>115年南航活動-參加人員通知名冊</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        header { text-align: center; border-bottom: 2px solid #004477; padding-bottom: 20px; margin-bottom: 25px; }
+        h1 { color: #004477; margin: 0; font-size: 26px; }
+        .event-details { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 15px; line-height: 1.8; text-align: left; display: inline-block; width: 100%; box-sizing: border-box; }
+        .detail-item { font-size: 16px; margin: 5px 0; display: flex; align-items: flex-start; }
+        .label { font-weight: bold; min-width: 60px; color: #004477; }
+        
+        /* 搜尋框 */
+        .search-box { margin: 25px 0; text-align: center; }
+        #nameSearch { width: 85%; max-width: 450px; padding: 15px 25px; border: 2px solid #004477; border-radius: 30px; font-size: 18px; outline: none; }
+        
+        .summary { margin-bottom: 10px; font-weight: bold; color: #666; font-size: 14px; text-align: right; padding-right: 10px; }
+        
+        /* 名單排版 */
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .name-item { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #eee; border-left: 5px solid #004477; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .id-num { font-size: 11px; color: #bbb; margin-right: 8px; width: 20px; text-align: center; }
+        .name-text { font-size: 17px; font-weight: bold; color: #333; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { 
+            .name-grid { grid-template-columns: 1fr; } 
+            h1 { font-size: 20px; }
+            .detail-item { font-size: 14px; }
+        }
+        @media print { .search-box, .summary { display: none; } .container { box-shadow: none; border: none; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>115年員工聯誼活動暨CIQS茶會</h1>
+        <div class="event-details">
+            <div class="detail-item"><span class="label">時間：</span><span>115年1月23日 (五) <strong>18:00 入場 / 18:30 開始</strong></span></div>
+            <div class="detail-item"><span class="label">地點：</span><span><strong>高雄翰品酒店 4樓兆慶廳</strong> (高雄市鹽埕區大仁路43號)</span></div>
+            <div class="detail-item"><span class="label">主辦：</span><span>交通部航港局南部航務中心</span></div>
+        </div>
+    </header>
+
+    <div class="search-box">
+        <input type="text" id="nameSearch" onkeyup="filterNames()" placeholder="🔍 輸入姓名快速查詢...">
+    </div>
+
+    <div class="summary">參加總人數：<span id="totalCount">91</span> 人</div>
+
+    <div class="name-grid" id="nameGrid"></div>
+</div>
+
+<script>
+    const rawData = "1張博彥2許東男3郭乃宏4黃森豐5李姸靜6陳逸勳7曾安志8邱敬婷9蔡俊雄10黃美真11侯彥廷12黃致融13林永昇14周昱伶15黃怡媛16李宜芳17潘順義18黃彥雄19楊姍姍20施雅雯21陳惠真22魏瑞宏23陳明宏24蔡世宏25黃瑞怜26曾玉如27許銘娟28王朝揚29鄒旻軒30黃佑婷31盧宗業32邱唯傑33王巧柔34崔淑芳35張為鈞36楊淑儀37羅伊婷38嚴意汝39李麗春40吳美琴41許智宇42曾春蘭43顏淑芬44武垂蓉45陳燦堯46楊貴森47呂武典48王奕超49陳宜樺50黃明智51曹銘介52黃銘賢53黃志方54許敦皓55師正魁56洪台榮57林志澤58王俊堯59謝明仁60葉帝廷61許家振62施秉旭63鄒騰傑64林浩正65陳盈瑄66洪宥祥67沈鈺婷68張凱宇69莊炳燦70高瑞甫71柯政良72李南毅73施智文74戴秀芬75林惠芳76林芝宥77黃韻嘉78黃賜吉79甘博雅80蔡蜀媛81吳玉玲82蔡惠喻83馬春陽84王惠霞85李浤睿86李璿玉87林聖芬88邱厚瑜89詹博雅90鄭憶歆91蔣嚴";
+
+    const names = [];
+    const matches = rawData.matchAll(/(\d+)([^\d]+)/g);
+    for (const match of matches) {
+        names.push({ id: match[1], name: match[2] });
+    }
+
+    const grid = document.getElementById('nameGrid');
+    function renderNames(data) {
+        grid.innerHTML = data.map(item => `
+            <div class="name-item">
+                <span class="id-num">${item.id}</span>
+                <span class="name-text">${item.name}</span>
+            </div>
+        `).join('');
+    }
+
+    renderNames(names);
+
+    function filterNames() {
+        const query = document.getElementById('nameSearch').value.toLowerCase();
+        const filtered = names.filter(item => item.name.toLowerCase().includes(query));
+        renderNames(filtered);
+    }
+</script>
+
+</body>
+</html>
