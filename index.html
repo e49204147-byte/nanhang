@@ -65,6 +65,7 @@
 引水人公會主任,主
 CDC,主
 CR驗船中心處長,主
+港務消防戴副大隊長,主
 
 副主任,4
 港政科科長,4
@@ -75,7 +76,6 @@ CDC,4
 裝卸公會,4
 裝卸公會,4
 裝卸公會,4
-港務消防戴副大隊長,4
 
 郭簡任技正,3
 航安科專員,3
@@ -176,7 +176,7 @@ CR驗船中心,2
 海技科,9
 海技科,9
 政風,9
-        
+
 安平航港科,10
 安平航港科,10
 安平航港科,10
@@ -187,7 +187,7 @@ CR驗船中心,2
 港政科,10
 安平航港科,10
 安平航港科,10</textarea>
-    <div class="stats-summary" id="quickStats">已排人數：120 / 120人</div>
+    <div class="stats-summary" id="quickStats">已排人數：122 / 122人</div>
     <button onclick="window.print()" style="margin-top:15px; padding:12px; background:#333; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">列印完整報表</button>
 </div>
 
@@ -257,7 +257,7 @@ CR驗船中心,2
         { name: "專門委員", count: 1, keys: ["專門委員","專委"] },
         { name: "前主祕余建勳(含夫人)", count: 2, keys: ["余建勳", "夫人"] },
         { name: "引水人公會", count: 3, keys: ["引水人"] },
-        { name: "航安科", count: 24, keys: ["航安"] }, // 已修正為24人
+        { name: "航安科", count: 24, keys: ["航安"] }, 
         { name: "海技科", count: 23, keys: ["海技"] }, 
         { name: "港政科", count: 16, keys: ["港政"] },
         { name: "監理科", count: 12, keys: ["監理"] }, 
@@ -306,7 +306,7 @@ CR驗船中心,2
             }
         });
 
-        document.getElementById('quickStats').innerText = `已排人數：${totalCount} / 120人`;
+        document.getElementById('quickStats').innerText = `已排人數：${totalCount} / 122人`;
         const statsBody = document.getElementById('statsBody'); statsBody.innerHTML = '';
         unitExpect.forEach(uRef => {
             const u = unitActual.find(item => item.name === uRef.name);
@@ -340,7 +340,7 @@ CR驗船中心,2
                                 if (name.includes("夫人")) label = "前主秘夫人";
                                 else label = "前主祕";
                             }
-                            if (uRef.name === "隨行秘書") label = "局長隨行秘書"; // 強制顯示全稱
+                            if (uRef.name === "隨行秘書") label = "局長隨行秘書"; 
                             
                             if (!labelsInTable.includes(label)) labelsInTable.push(label);
                             break;
