@@ -10,22 +10,21 @@
             background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
             color: #fff; margin: 0; height: 100vh; display: flex; flex-direction: column; 
             align-items: center; justify-content: flex-start; overflow-y: auto;
-            padding: 40px 20px; box-sizing: border-box;
+            padding: 40px 20px 80px 20px; box-sizing: border-box;
         }
-        .header { text-align: center; margin-bottom: 30px; flex-shrink: 0; }
+        
+        /* 捲軸美化 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 215, 0, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+
+        .header { text-align: center; margin-bottom: 20px; flex-shrink: 0; }
         .title { font-size: 52px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-top: 5px; letter-spacing: 2px; }
 
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; margin-bottom: 40px; }
-        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; }
-        .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.1); border-color: #ffd700; }
-        .icon { font-size: 32px; margin-bottom: 5px; }
-        .card-title { font-size: 16px; font-weight: bold; color: #ffd700; }
-
-        /* --- 單位快速選擇區 --- */
-        .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
+        /* --- 單位快速選擇區 (核心功能上移) --- */
+        .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
         
-        /* 核心指示標題 (已修正文字) */
         .find-table-header {
             font-size: 24px; color: #ffd700; font-weight: 900; margin-bottom: 25px;
             letter-spacing: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -33,22 +32,22 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .nav-section { width: 100%; margin-bottom: 25px; text-align: center; }
-        .nav-label { font-size: 14px; color: rgba(255, 215, 0, 0.7); font-weight: bold; margin-bottom: 12px; display: block; letter-spacing: 2px; }
+        .nav-section { width: 100%; margin-bottom: 20px; text-align: center; }
+        .nav-label { font-size: 14px; color: rgba(255, 215, 0, 0.7); font-weight: bold; margin-bottom: 10px; display: block; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; width: 80%; margin-left: auto; margin-right: auto;}
         .nav-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 
         .nav-btn {
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ddd; padding: 8px 18px; border-radius: 4px; cursor: pointer;
+            color: #ddd; padding: 8px 16px; border-radius: 4px; cursor: pointer;
             font-size: 14px; transition: 0.2s;
         }
         .nav-btn:hover { background: #ffd700; color: #000; border-color: #fff; transform: scale(1.05); }
         .nav-btn.active { background: #ffd700; color: #000; font-weight: bold; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
 
-        .search-bar { width: 100%; max-width: 500px; background: rgba(0,0,0,0.4); padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
+        .search-bar { width: 100%; max-width: 500px; background: rgba(0,0,0,0.4); padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 20px; margin-top: 10px;}
         .search-input { flex-grow: 1; background: transparent; border: none; color: #fff; font-size: 18px; padding: 0 15px; outline: none; text-align: center; }
         
-        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; width: 100%; }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; width: 100%; margin-bottom: 20px; }
         .result-card { background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 15px; border-left: 5px solid #00e676; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popIn 0.3s ease-out; }
         .result-card.vip { border-left-color: #ffd700; background: rgba(255, 215, 0, 0.1); }
         .table-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
@@ -56,6 +55,76 @@
         .person-list { font-size: 14px; line-height: 1.8; color: #ccc; }
         .highlight { color: #ffd700; font-weight: bold; background: rgba(255,215,0,0.1); border-radius: 2px; }
         
+        /* --- 微型地圖樣式 (修正第1桌跑位問題) --- */
+        .mini-map-container {
+            width: 100%; max-width: 500px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; padding: 20px; margin-top: 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .mini-map-title { color: #aaa; font-size: 14px; margin-bottom: 15px; letter-spacing: 1px; }
+        
+        .map-grid {
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; width: 100%;
+        }
+        
+        .map-cell {
+            aspect-ratio: 1/1; 
+            border-radius: 50%; 
+            border: 2px solid #555;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 16px; color: #888;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .map-stage {
+            grid-column: span 4; height: 40px; background: #c0392b; 
+            border-radius: 4px; color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; letter-spacing: 5px; margin-bottom: 10px; border: none;
+        }
+        
+        /* 讓主桌獨佔一行並置中 */
+        .map-row-vip {
+            grid-column: 1 / -1; /* 跨滿4格 */
+            display: flex; justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .map-vip { 
+            width: 160px; height: 80px;
+            border-radius: 50px; border: 2px solid #ffd700; color: #ffd700; 
+            background: rgba(255, 215, 0, 0.1); font-size: 18px; 
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        
+        .map-divider {
+            grid-column: span 4; height: 1px; background: none; border-top: 1px dashed #555;
+            margin: 5px 0; position: relative;
+        }
+        .map-divider::after {
+            content: '走 道'; position: absolute; left: 50%; top: -10px; transform: translateX(-50%);
+            background: #203a43; padding: 0 5px; color: #555; font-size: 12px;
+        }
+
+        .map-cell.pillar { border-color: #e67e22; color: #e67e22; background: rgba(230, 126, 34, 0.1); font-size: 14px; border-radius: 4px; }
+
+        /* --- 底部功能區 (下移後樣式) --- */
+        .footer-nav {
+            width: 100%; max-width: 900px;
+            margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+        .footer-label { text-align: center; color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 15px; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
+        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; }
+        .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.08); border-color: #ffd700; color: #fff; }
+        .icon { font-size: 28px; margin-bottom: 5px; }
+        .card-title { font-size: 15px; font-weight: bold; }
+
         .clock { position: fixed; top: 20px; right: 30px; font-family: monospace; font-size: 24px; color: rgba(255,255,255,0.3); }
         @keyframes popIn { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
     </style>
@@ -69,12 +138,6 @@
     <div class="subtitle">交通部航港局南部航務中心 | 員工聯誼暨 CIQS 茶會</div>
 </div>
 
-<div class="grid-container">
-    <a href="index.html" target="_blank" class="card"><div class="icon">🗺️</div><div class="card-title">座位配置圖</div></a>
-    <a href="list.html" target="_blank" class="card"><div class="icon">📋</div><div class="card-title">詳細名冊</div></a>
-    <a href="lottery.html" target="_blank" class="card"><div class="icon">🎰</div><div class="card-title">幸運抽獎</div></a>
-</div>
-
 <div class="search-container">
     
     <div class="find-table-header">請選擇單位尋找桌次</div>
@@ -82,10 +145,11 @@
     <div class="nav-section">
         <span class="nav-label">─ 內部單位 ─</span>
         <div class="nav-btns">
-            <button class="nav-btn" onclick="quickFilter('局長|隨行', '局長室')">局長室</button>
-            <button class="nav-btn" onclick="quickFilter('主任', '主任/副主任')">主任/副主任</button>
+            <button class="nav-btn" onclick="quickFilter('^局長|^隨行', '局長室')">局長室</button>
+            <button class="nav-btn" onclick="quickFilter('^主任|^副主任', '主任/副主任')">主任/副主任</button>
             <button class="nav-btn" onclick="quickFilter('簡任技正|專門委員', '簡技/專委')">簡技/專委</button>
             <button class="nav-btn" onclick="quickFilter('科長', '科長')">科長</button>
+            <button class="nav-btn" onclick="quickFilter('政風', '政風室')">政風室</button>
             <button class="nav-btn" onclick="quickFilter('航安', '航安科')">航安科</button>
             <button class="nav-btn" onclick="quickFilter('海技', '海技科')">海技科</button>
             <button class="nav-btn" onclick="quickFilter('港政', '港政科')">港政科</button>
@@ -101,7 +165,6 @@
             <button class="nav-btn" onclick="quickFilter('CDC', 'CDC')">CDC</button>
             <button class="nav-btn" onclick="quickFilter('驗船中心', '驗船中心')">驗船中心</button>
             <button class="nav-btn" onclick="quickFilter('港勤', '港勤公司')">港勤公司</button>
-            <button class="nav-btn" onclick="quickFilter('政風', '政風室')">政風室</button>
         </div>
     </div>
 
@@ -111,7 +174,7 @@
             <button class="nav-btn" onclick="quickFilter('裝卸公會', '裝卸公會')">裝卸公會</button>
             <button class="nav-btn" onclick="quickFilter('船代公會', '船代公會')">船代公會</button>
             <button class="nav-btn" onclick="quickFilter('引水人', '引水人公會')">引水人公會</button>
-            <button class="nav-btn" onclick="quickFilter('國際輪船', '國際輪船')">國際輪船</button>
+            <button class="nav-btn" onclick="quickFilter('國際輪船', '國際輪船公會')">國際輪船公會</button>
             <button class="nav-btn" onclick="quickFilter('倉庫公會', '倉庫公會')">倉庫公會</button>
             <button class="nav-btn" onclick="quickFilter('理貨公會', '理貨公會')">理貨公會</button>
         </div>
@@ -123,13 +186,51 @@
     </div>
     
     <div id="resultGrid" class="result-grid"></div>
+
+    <div class="mini-map-container">
+        <div class="mini-map-title">📍 全場座位相對位置圖</div>
+        <div class="map-grid">
+            <div class="map-stage">舞 台</div>
+            
+            <div class="map-row-vip">
+                <div class="map-vip">主 桌</div>
+            </div>
+            
+            <div class="map-cell">1</div>
+            <div class="map-cell">2</div>
+            <div class="map-cell">3</div>
+            <div class="map-cell">4</div>
+            
+            <div class="map-divider"></div>
+            
+            <div class="map-cell">5</div>
+            <div class="map-cell">6</div>
+            <div class="map-cell">7</div>
+            <div class="map-cell">8</div>
+            
+            <div class="map-cell">9</div>
+            <div class="map-cell pillar">柱子</div>
+            <div class="map-cell">10</div>
+            <div class="map-cell">11</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer-nav">
+    <div class="footer-label">─ 功能快捷區 ─</div>
+    <div class="grid-container">
+        <a href="index.html" target="_blank" class="card"><div class="icon">🗺️</div><div class="card-title">座位配置圖</div></a>
+        <a href="list.html" target="_blank" class="card"><div class="icon">📋</div><div class="card-title">詳細名冊</div></a>
+        <a href="lottery.html" target="_blank" class="card"><div class="icon">🎰</div><div class="card-title">幸運抽獎</div></a>
+    </div>
 </div>
 
 <textarea id="database" style="display:none;">
 局長葉協隆,主
 主任張博彥,主
 前主秘余建勳,主
-國際輪船理事長,主
+國際輪船公會理事長,主
 倉庫公會理事長,主
 裝卸公會理事長,主
 理貨公會理事長,主
@@ -157,7 +258,7 @@ CDC,4
 裝卸公會,3
 引水人公會李汶彥,3
 引水人公會李崇岱,3
-國際輪船總幹事,3
+國際輪船公會總幹事,3
 黃簡任技正,2
 海技科科長,2
 海技科技正,2
@@ -257,7 +358,6 @@ CR驗船中心,2
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // 強化版快速過濾
     function quickFilter(query, btnText) {
         document.getElementById('searchInput').value = query;
         smartSearch();
@@ -280,7 +380,14 @@ CR驗船中心,2
         let matches = {}; 
 
         for (let line of lines) {
-            const isMatch = queries.some(q => line.includes(q));
+            const isMatch = queries.some(q => {
+                if (q.startsWith('^')) {
+                    const keyword = q.substring(1);
+                    return line.trim().indexOf(keyword) === 0;
+                }
+                return line.includes(q);
+            });
+
             if (isMatch) {
                 const parts = line.split(/[,\s\t]+/);
                 if (parts.length >= 2) {
@@ -309,7 +416,8 @@ CR驗船中心,2
             const peopleHtml = people.map(p => {
                 let displayName = p;
                 queries.forEach(q => {
-                    const regex = new RegExp(q, 'gi');
+                    const cleanQ = q.replace('^', '');
+                    const regex = new RegExp(cleanQ, 'gi');
                     displayName = displayName.replace(regex, match => `<span class="highlight">${match}</span>`);
                 });
                 return `<div>• ${displayName}</div>`;
