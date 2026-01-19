@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>南航115年聯誼活動總控中心</title>
     <style>
+        /* --- 全局深色質感設定 --- */
         body { 
             font-family: "Microsoft JhengHei", sans-serif; 
             background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
@@ -22,9 +23,10 @@
         .title { font-size: 52px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-top: 5px; letter-spacing: 2px; }
 
-        /* --- 單位快速選擇區 (核心功能上移) --- */
+        /* --- 單位快速選擇區 --- */
         .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
         
+        /* 核心指示標題 */
         .find-table-header {
             font-size: 24px; color: #ffd700; font-weight: 900; margin-bottom: 25px;
             letter-spacing: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -55,7 +57,7 @@
         .person-list { font-size: 14px; line-height: 1.8; color: #ccc; }
         .highlight { color: #ffd700; font-weight: bold; background: rgba(255,215,0,0.1); border-radius: 2px; }
         
-        /* --- 微型地圖樣式 (修正第1桌跑位問題) --- */
+        /* --- 微型地圖樣式 --- */
         .mini-map-container {
             width: 100%; max-width: 500px; 
             background: rgba(255, 255, 255, 0.03); 
@@ -86,9 +88,8 @@
             font-weight: bold; letter-spacing: 5px; margin-bottom: 10px; border: none;
         }
         
-        /* 讓主桌獨佔一行並置中 */
         .map-row-vip {
-            grid-column: 1 / -1; /* 跨滿4格 */
+            grid-column: 1 / -1; 
             display: flex; justify-content: center;
             margin-bottom: 10px;
         }
@@ -111,7 +112,7 @@
 
         .map-cell.pillar { border-color: #e67e22; color: #e67e22; background: rgba(230, 126, 34, 0.1); font-size: 14px; border-radius: 4px; }
 
-        /* --- 底部功能區 (下移後樣式) --- */
+        /* --- 底部功能區 --- */
         .footer-nav {
             width: 100%; max-width: 900px;
             margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
@@ -191,30 +192,13 @@
         <div class="mini-map-title">📍 全場座位相對位置圖</div>
         <div class="map-grid">
             <div class="map-stage">舞 台</div>
-            
-            <div class="map-row-vip">
-                <div class="map-vip">主 桌</div>
-            </div>
-            
-            <div class="map-cell">1</div>
-            <div class="map-cell">2</div>
-            <div class="map-cell">3</div>
-            <div class="map-cell">4</div>
-            
+            <div class="map-row-vip"><div class="map-vip">主 桌</div></div>
+            <div class="map-cell">1</div><div class="map-cell">2</div><div class="map-cell">3</div><div class="map-cell">4</div>
             <div class="map-divider"></div>
-            
-            <div class="map-cell">5</div>
-            <div class="map-cell">6</div>
-            <div class="map-cell">7</div>
-            <div class="map-cell">8</div>
-            
-            <div class="map-cell">9</div>
-            <div class="map-cell pillar">柱子</div>
-            <div class="map-cell">10</div>
-            <div class="map-cell">11</div>
+            <div class="map-cell">5</div><div class="map-cell">6</div><div class="map-cell">7</div><div class="map-cell">8</div>
+            <div class="map-cell">9</div><div class="map-cell pillar">柱子</div><div class="map-cell">10</div><div class="map-cell">11</div>
         </div>
     </div>
-
 </div>
 
 <div class="footer-nav">
@@ -239,6 +223,7 @@
 CDC,主
 CR驗船中心處長,主
 港務消防戴副大隊長,主
+
 副主任,4
 港政科科長,4
 港政科視察,4
@@ -249,6 +234,7 @@ CDC,4
 裝卸公會,4
 裝卸公會,4
 裝卸公會,4
+
 郭簡任技正,3
 航安科專員,3
 航安科專員,3
@@ -259,18 +245,21 @@ CDC,4
 引水人公會李汶彥,3
 引水人公會李崇岱,3
 國際輪船公會總幹事,3
+
 黃簡任技正,2
 海技科科長,2
 海技科技正,2
 海技科技正,2
 海技科專員,2
-安平航港科技正,2
 CR驗船中心,2
 港勤公司,2
 港勤公司,2
 余建勳夫人,2
+局長隨行秘書,2
+
 吳專門委員,1
 安平航港科科長,1
+安平航港科技正,1
 安平航港科視察,1
 安平航港科專員,1
 監理科科長,1
@@ -278,7 +267,7 @@ CR驗船中心,2
 船代公會,1
 船代公會,1
 船代公會,1
-局長隨行秘書,1
+
 航安科,7
 航安科,7
 航安科,7
@@ -290,6 +279,7 @@ CR驗船中心,2
 航安科,7
 航安科,7
 航安科(素食),7
+
 航安科,11
 航安科,11
 航安科,11
@@ -300,6 +290,7 @@ CR驗船中心,2
 航安科,11
 航安科,11
 航安科(素食),11
+
 監理科,5
 監理科,5
 監理科,5
@@ -309,6 +300,7 @@ CR驗船中心,2
 監理科,5
 監理科,5
 監理科,5
+
 港政科,8
 港政科,8
 港政科,8
@@ -319,6 +311,7 @@ CR驗船中心,2
 港政科,8
 港政科,8
 港政科,8
+
 海技科,6
 海技科,6
 海技科,6
@@ -329,6 +322,7 @@ CR驗船中心,2
 海技科,6
 海技科,6
 海技科,6
+
 海技科,9
 海技科,9
 海技科,9
@@ -339,6 +333,7 @@ CR驗船中心,2
 海技科,9
 海技科,9
 政風,9
+
 安平航港科,10
 安平航港科,10
 安平航港科,10
@@ -380,6 +375,7 @@ CR驗船中心,2
         let matches = {}; 
 
         for (let line of lines) {
+            // ^ 代表從字首開始匹配，防止混淆 (例如 主任 vs 公會主任)
             const isMatch = queries.some(q => {
                 if (q.startsWith('^')) {
                     const keyword = q.substring(1);
