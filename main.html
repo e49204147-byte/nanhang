@@ -10,32 +10,45 @@
             background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
             color: #fff; margin: 0; height: 100vh; display: flex; flex-direction: column; 
             align-items: center; justify-content: flex-start; overflow-y: auto;
-            padding-top: 60px; box-sizing: border-box;
+            padding: 40px 20px; box-sizing: border-box;
         }
-        .header { text-align: center; margin-bottom: 40px; flex-shrink: 0; }
-        .title { font-size: 56px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .subtitle { font-size: 20px; color: rgba(255,255,255,0.6); margin-top: 10px; letter-spacing: 2px; }
+        .header { text-align: center; margin-bottom: 30px; flex-shrink: 0; }
+        .title { font-size: 52px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-top: 5px; letter-spacing: 2px; }
 
-        /* 功能卡片 */
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 80%; max-width: 1000px; margin-bottom: 40px; }
-        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; }
-        .card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); border-color: #ffd700; box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
-        .icon { font-size: 40px; margin-bottom: 10px; }
-        .card-title { font-size: 20px; font-weight: bold; margin-bottom: 5px; color: #ffd700; }
-        .card-desc { font-size: 13px; color: #ccc; line-height: 1.4; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; margin-bottom: 30px; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; }
+        .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.1); border-color: #ffd700; }
+        .icon { font-size: 32px; margin-bottom: 5px; }
+        .card-title { font-size: 16px; font-weight: bold; color: #ffd700; }
 
-        /* 智慧搜尋 */
-        .search-container { width: 85%; max-width: 900px; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
-        .search-bar { width: 100%; max-width: 600px; background: rgba(0,0,0,0.4); padding: 15px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
-        .search-input { flex-grow: 1; background: transparent; border: none; color: #fff; font-size: 20px; padding: 0 15px; outline: none; text-align: center; }
-        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; }
-        .result-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px; border-left: 5px solid #00e676; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        /* --- 單位快速選擇區 (分類佈局) --- */
+        .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
+        
+        .nav-section { width: 100%; margin-bottom: 20px; text-align: center; }
+        .nav-label { font-size: 14px; color: #ffd700; font-weight: bold; margin-bottom: 10px; display: block; letter-spacing: 2px; border-bottom: 1px solid rgba(255,215,0,0.2); padding-bottom: 5px; }
+        .nav-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ddd; padding: 8px 16px; border-radius: 4px; cursor: pointer;
+            font-size: 14px; transition: 0.2s;
+        }
+        .nav-btn:hover { background: #ffd700; color: #000; border-color: #fff; }
+        .nav-btn.active { background: #ffd700; color: #000; font-weight: bold; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+
+        .search-bar { width: 100%; max-width: 500px; background: rgba(0,0,0,0.4); padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
+        .search-input { flex-grow: 1; background: transparent; border: none; color: #fff; font-size: 18px; padding: 0 15px; outline: none; text-align: center; }
+        
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; width: 100%; }
+        .result-card { background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 15px; border-left: 5px solid #00e676; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: popIn 0.3s ease-out; }
         .result-card.vip { border-left-color: #ffd700; background: rgba(255, 215, 0, 0.1); }
-        .table-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
-        .table-count { float: right; font-size: 13px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; color: #ffd700; }
-        .person-list { font-size: 14px; line-height: 1.6; color: #ddd; }
-        .highlight { color: #ffd700; font-weight: bold; }
-        .clock { position: fixed; top: 20px; right: 30px; font-family: monospace; font-size: 24px; color: rgba(255,255,255,0.5); }
+        .table-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        .table-count { float: right; font-size: 12px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; color: #ffd700; }
+        .person-list { font-size: 14px; line-height: 1.8; color: #ccc; }
+        .highlight { color: #ffd700; font-weight: bold; background: rgba(255,215,0,0.1); border-radius: 2px; }
+        .clock { position: fixed; top: 20px; right: 30px; font-family: monospace; font-size: 24px; color: rgba(255,255,255,0.3); }
+        @keyframes popIn { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
     </style>
 </head>
 <body>
@@ -48,28 +61,56 @@
 </div>
 
 <div class="grid-container">
-    <a href="index.html" target="_blank" class="card">
-        <div class="icon">🗺️</div>
-        <div class="card-title">座位配置圖</div>
-        <div class="card-desc">發送同仁連結<br>(index.html)</div>
-    </a>
-    <a href="list.html" target="_blank" class="card">
-        <div class="icon">📋</div>
-        <div class="card-title">詳細名冊</div>
-        <div class="card-desc">單位職稱排序<br>(list.html)</div>
-    </a>
-    <a href="lottery.html" target="_blank" class="card">
-        <div class="icon">🎰</div>
-        <div class="card-title">幸運抽獎</div>
-        <div class="card-desc">互動抽獎系統<br>(lottery.html)</div>
-    </a>
+    <a href="index.html" target="_blank" class="card"><div class="icon">🗺️</div><div class="card-title">座位配置圖</div></a>
+    <a href="list.html" target="_blank" class="card"><div class="icon">📋</div><div class="card-title">詳細名冊</div></a>
+    <a href="lottery.html" target="_blank" class="card"><div class="icon">🎰</div><div class="card-title">幸運抽獎</div></a>
 </div>
 
 <div class="search-container">
+    
+    <div class="nav-section">
+        <span class="nav-label">─ 內部單位 ─</span>
+        <div class="nav-btns">
+            <button class="nav-btn" onclick="quickFilter('局長|隨行', '局長室')">局長室</button>
+            <button class="nav-btn" onclick="quickFilter('主任', '主任/副主任')">主任/副主任</button>
+            <button class="nav-btn" onclick="quickFilter('簡任技正|專門委員', '簡技/專委')">簡技/專委</button>
+            <button class="nav-btn" onclick="quickFilter('科長', '科長')">科長</button>
+            <button class="nav-btn" onclick="quickFilter('航安', '航安科')">航安科</button>
+            <button class="nav-btn" onclick="quickFilter('海技', '海技科')">海技科</button>
+            <button class="nav-btn" onclick="quickFilter('港政', '港政科')">港政科</button>
+            <button class="nav-btn" onclick="quickFilter('監理', '監理科')">監理科</button>
+            <button class="nav-btn" onclick="quickFilter('安平', '安平科')">安平科</button>
+        </div>
+    </div>
+
+    <div class="nav-section">
+        <span class="nav-label">─ 其他公務機關 ─</span>
+        <div class="nav-btns">
+            <button class="nav-btn" onclick="quickFilter('消防', '消防隊')">消防隊</button>
+            <button class="nav-btn" onclick="quickFilter('CDC', 'CDC')">CDC</button>
+            <button class="nav-btn" onclick="quickFilter('驗船中心', '驗船中心')">驗船中心</button>
+            <button class="nav-btn" onclick="quickFilter('港勤', '港勤公司')">港勤公司</button>
+            <button class="nav-btn" onclick="quickFilter('政風', '政風室')">政風室</button>
+        </div>
+    </div>
+
+    <div class="nav-section">
+        <span class="nav-label">─ 業界公會 ─</span>
+        <div class="nav-btns">
+            <button class="nav-btn" onclick="quickFilter('裝卸公會', '裝卸公會')">裝卸公會</button>
+            <button class="nav-btn" onclick="quickFilter('船代公會', '船代公會')">船代公會</button>
+            <button class="nav-btn" onclick="quickFilter('引水人', '引水人公會')">引水人公會</button>
+            <button class="nav-btn" onclick="quickFilter('國際輪船', '國際輪船')">國際輪船</button>
+            <button class="nav-btn" onclick="quickFilter('倉庫公會', '倉庫公會')">倉庫公會</button>
+            <button class="nav-btn" onclick="quickFilter('理貨公會', '理貨公會')">理貨公會</button>
+        </div>
+    </div>
+
     <div class="search-bar">
         <span style="font-size:24px;">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="輸入單位或職稱快速查桌次..." oninput="smartSearch()" autocomplete="off">
+        <input type="text" id="searchInput" class="search-input" placeholder="手動搜尋姓名或職稱..." oninput="smartSearch()" autocomplete="off">
     </div>
+    
     <div id="resultGrid" class="result-grid"></div>
 </div>
 
@@ -203,8 +244,20 @@ CR驗船中心,2
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', {hour12:false});
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
+
+    // 強化版快速過濾：支援多關鍵字 (| 隔開)
+    function quickFilter(query, btnText) {
+        // 設定搜尋框並觸發搜尋 (若有多關鍵字，使用 | )
+        document.getElementById('searchInput').value = query;
+        smartSearch();
+        
+        // 切換按鈕激活狀態
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            if(btn.innerText === btnText) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
 
     function smartSearch() {
         const input = document.getElementById('searchInput').value.trim();
@@ -212,10 +265,16 @@ CR驗船中心,2
         const db = document.getElementById('database').value;
         resultGrid.innerHTML = "";
         if (!input) return;
+
+        // 支援多關鍵字搜尋 (例如: 局長|隨行)
+        const queries = input.split('|');
         const lines = db.split('\n');
         let matches = {}; 
+
         for (let line of lines) {
-            if (line.includes(input)) {
+            // 只要符合任一關鍵字就抓出來
+            const isMatch = queries.some(q => line.includes(q));
+            if (isMatch) {
                 const parts = line.split(/[,\s\t]+/);
                 if (parts.length >= 2) {
                     const tableNum = parts[parts.length - 1].trim();
@@ -225,23 +284,31 @@ CR驗船中心,2
                 }
             }
         }
+
         const sortedKeys = Object.keys(matches).sort((a, b) => {
             if (a === '主') return -1;
             if (b === '主') return 1;
             return parseInt(a) - parseInt(b);
         });
+
         if (sortedKeys.length === 0) {
-            resultGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ff6b6b; font-size:18px;">❌ 查無資料</div>`;
+            resultGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ff6b6b; padding:20px;">❌ 查無相關資料</div>`;
             return;
         }
+
         sortedKeys.forEach(table => {
             const people = matches[table];
             const isVip = table === '主';
             const peopleHtml = people.map(p => {
-                const regex = new RegExp(input, 'gi');
-                const highlightedName = p.replace(regex, match => `<span class="highlight">${match}</span>`);
-                return `<div>• ${highlightedName}</div>`;
+                // 將所有關鍵字高亮
+                let displayName = p;
+                queries.forEach(q => {
+                    const regex = new RegExp(q, 'gi');
+                    displayName = displayName.replace(regex, match => `<span class="highlight">${match}</span>`);
+                });
+                return `<div>• ${displayName}</div>`;
             }).join('');
+
             const card = document.createElement('div');
             card.className = `result-card ${isVip ? 'vip' : ''}`;
             card.innerHTML = `<div class="table-title">${isVip?'主 桌':`第 ${table} 桌`}<span class="table-count">${people.length}人</span></div><div class="person-list">${peopleHtml}</div>`;
@@ -249,6 +316,5 @@ CR驗船中心,2
         });
     }
 </script>
-
 </body>
 </html>
