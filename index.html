@@ -62,8 +62,8 @@
 倉庫公會理事長,主
 裝卸公會理事長,主
 理貨公會理事長,主
-船代公會理事長,主
-引水人公會主任,主
+船代工會理事長,主
+引水人公會陳策勤,主
 
 副主任,4
 港政科科長,4
@@ -244,6 +244,7 @@ CDC,4
 </div>
 
 <script>
+    // 定義類別與關鍵字
     const unitExpect = [
         { name: "局長", count: 1 },
         { name: "隨行秘書", count: 1, keys: ["局長隨行秘書"] },
@@ -277,6 +278,7 @@ CDC,4
         const unitActual = unitExpect.map(u => ({ ...u, actual: 0, tableSet: new Set() }));
         let totalCount = 0;
 
+        // 預解析
         lines.forEach(line => {
             const parts = line.split(/[,\s\t]+/);
             if (parts.length >= 2) {
@@ -284,11 +286,14 @@ CDC,4
                 const name = parts.slice(0, parts.length - 1).join(' ').trim();
                 if (tables[tableNum] && name) {
                     tables[tableNum].push(name); totalCount++;
+                    
+                    // 偵測邏輯：排序關鍵字長度，長的優先比對 (重要：隨行秘書優先於局長)
                     const sortedExpect = [...unitExpect].sort((a,b) => {
                         const lenA = a.keys ? a.keys[0].length : a.name.length;
                         const lenB = b.keys ? b.keys[0].length : b.name.length;
                         return lenB - lenA;
                     });
+
                     for (let uRef of sortedExpect) {
                         const keys = uRef.keys || [uRef.name];
                         if (keys.some(k => name.includes(k))) {
@@ -313,22 +318,32 @@ CDC,4
 
         const indexContainer = document.getElementById('indexContainer'); indexContainer.innerHTML = '';
         const displayOrder = ['主', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+        
         displayOrder.forEach(key => {
             if (!tables[key]) return;
             const mapEl = document.getElementById('map-' + key);
             if (mapEl) {
-                const units = [];
-                tables[key].forEach(n => {
-                    for (let uRef of unitExpect) {
+                const labelsInTable = [];
+                tables[key].forEach(name => {
+                    // 再次進行長度優先比對，獲取正確標籤
+                    const sortedExpect = [...unitExpect].sort((a,b) => {
+                        const lenA = a.keys ? a.keys[0].length : a.name.length;
+                        const lenB = b.keys ? b.keys[0].length : b.name.length;
+                        return lenB - lenA;
+                    });
+                    
+                    for (let uRef of sortedExpect) {
                         const keys = uRef.keys || [uRef.name];
-                        if (keys.some(k => n.includes(k))) {
-                            const label = (uRef.name === "隨行秘書") ? "隨行" : uRef.name;
-                            if (!units.includes(label)) units.push(label);
+                        if (keys.some(k => name.includes(k))) {
+                            let label = uRef.name;
+                            // 強制過濾：只要是隨行秘書，標籤一律改為「隨行」或「秘書」
+                            if (label === "隨行秘書") label = "隨行";
+                            if (!labelsInTable.includes(label)) labelsInTable.push(label);
                             break;
                         }
                     }
                 });
-                mapEl.innerHTML = units.join('<br>');
+                mapEl.innerHTML = labelsInTable.join('<br>');
             }
             const title = key === '主' ? '主桌' : `第 ${key} 桌`;
             indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${tables[key].join('、')}<br><hr style="border:0.5px solid #eee;">`;
