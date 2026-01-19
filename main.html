@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>南航115年聯誼活動總控中心</title>
     <style>
+        /* --- 全局設定 --- */
         body { 
             font-family: "Microsoft JhengHei", sans-serif; 
             background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
-            color: #fff; margin: 0; height: 100vh; display: flex; flex-direction: column; 
+            color: #fff; margin: 0; min-height: 100vh; display: flex; flex-direction: column; 
             align-items: center; justify-content: flex-start; overflow-y: auto;
             padding: 40px 20px 80px 20px; box-sizing: border-box;
         }
@@ -26,7 +27,7 @@
         .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; }
         
         .find-table-header {
-            font-size: 24px; color: #ffd700; font-weight: 900; margin-bottom: 20px;
+            font-size: 24px; color: #ffd700; font-weight: 900; margin-bottom: 25px;
             letter-spacing: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
             background: rgba(255, 255, 255, 0.1); padding: 10px 40px; border-radius: 50px;
             border: 1px solid rgba(255, 215, 0, 0.3); text-align: center;
@@ -50,19 +51,19 @@
         .result-section-title { width: 100%; text-align: center; color: #00e676; font-size: 14px; margin-bottom: 10px; display: none; animation: fadeIn 0.5s; }
         .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; width: 100%; margin-bottom: 40px; scroll-margin-top: 20px; }
         
-        /* --- 結果卡片優化 (靠左對齊版) --- */
+        /* --- 結果卡片 (靠左對齊) --- */
         .result-card { 
-            background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 15px 20px; /* 增加左右 padding */
+            background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 15px 20px; 
             border-left: 5px solid #00e676; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
             animation: popIn 0.3s ease-out; 
-            text-align: left; /* 關鍵：強制靠左 */
+            text-align: left; 
         }
         .result-card.vip { border-left-color: #ffd700; background: rgba(255, 215, 0, 0.1); }
         
         .table-title { 
             font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; 
             border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; 
-            display: flex; justify-content: space-between; align-items: center; /* 讓桌號跟人數左右分開 */
+            display: flex; justify-content: space-between; align-items: center;
         }
         .table-count { 
             font-size: 13px; background: rgba(255,255,255,0.1); 
@@ -71,16 +72,13 @@
         
         .person-list { 
             font-size: 15px; line-height: 1.8; color: #ccc; 
-            text-align: left; /* 清單內容靠左 */
+            text-align: left;
         }
         .person-item { 
-            display: flex; justify-content: flex-start; /* 項目靠左 */
+            display: flex; justify-content: flex-start;
             align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.05); padding: 2px 0;
         }
-        .count-badge { 
-            font-size: 12px; background: #00e676; color: #000; 
-            padding: 1px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; 
-        }
+        .count-badge { font-size: 12px; background: #00e676; color: #000; padding: 1px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; }
         .highlight { color: #ffd700; font-weight: bold; }
         
         /* 微型地圖 */
@@ -89,8 +87,19 @@
         .map-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
         .map-cell { aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: #888; background: rgba(0,0,0,0.2); }
         .map-stage { grid-column: span 4; height: 40px; background: #c0392b; border-radius: 4px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; letter-spacing: 5px; margin-bottom: 10px; border: none; }
+        
         .map-row-vip { grid-column: 1 / -1; display: flex; justify-content: center; margin-bottom: 10px; }
-        .map-vip { width: 160px; height: 80px; border-radius: 50px; border: 2px solid #ffd700; color: #ffd700; background: rgba(255, 215, 0, 0.1); font-size: 18px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        /* --- 修正處：主桌改為正圓形 --- */
+        .map-vip { 
+            width: 100px; height: 100px; /* 長寬相等 */
+            border-radius: 50%;          /* 50% 為正圓 */
+            border: 2px solid #ffd700; color: #ffd700; 
+            background: rgba(255, 215, 0, 0.1); font-size: 18px; 
+            display: flex; align-items: center; justify-content: center; font-weight: bold; 
+        }
+        /* --------------------------- */
+
         .map-divider { grid-column: span 4; height: 1px; background: none; border-top: 1px dashed #555; margin: 5px 0; position: relative; }
         .map-divider::after { content: '走 道'; position: absolute; left: 50%; top: -10px; transform: translateX(-50%); background: #203a43; padding: 0 5px; color: #555; font-size: 12px; }
         .map-cell.pillar { border-color: #e67e22; color: #e67e22; background: rgba(230, 126, 34, 0.1); font-size: 14px; border-radius: 4px; }
@@ -119,7 +128,8 @@
             .card { padding: 10px; }
             .icon { font-size: 20px; }
             .card-title { font-size: 12px; }
-            .map-vip { width: 120px; height: 60px; font-size: 16px; }
+            /* 主桌縮小一點適應手機 */
+            .map-vip { width: 80px; height: 80px; font-size: 16px; }
             .clock { font-size: 16px; top: 10px; right: 10px; }
         }
         @keyframes popIn { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
@@ -220,6 +230,7 @@
 CDC,主
 CR驗船中心處長,主
 港務消防戴副大隊長,主
+
 副主任,4
 港政科科長,4
 港政科視察,4
@@ -230,6 +241,7 @@ CDC,4
 裝卸公會,4
 裝卸公會,4
 裝卸公會,4
+
 郭簡任技正,3
 航安科專員,3
 航安科專員,3
@@ -240,17 +252,18 @@ CDC,4
 引水人公會李汶彥,3
 引水人公會李崇岱,3
 國際輪船公會總幹事,3
+
 黃簡任技正,2
 海技科科長,2
 海技科技正,2
 海技科技正,2
 海技科專員,2
-安平航港科技正,2
 CR驗船中心,2
 港勤公司,2
 港勤公司,2
 余建勳夫人,2
 局長隨行秘書,2
+
 吳專門委員,1
 安平航港科科長,1
 安平航港科技正,1
@@ -261,6 +274,7 @@ CR驗船中心,2
 船代公會,1
 船代公會,1
 船代公會,1
+
 航安科,7
 航安科,7
 航安科,7
@@ -272,6 +286,7 @@ CR驗船中心,2
 航安科,7
 航安科,7
 航安科(素食),7
+
 航安科,11
 航安科,11
 航安科,11
@@ -282,6 +297,7 @@ CR驗船中心,2
 航安科,11
 航安科,11
 航安科(素食),11
+
 監理科,5
 監理科,5
 監理科,5
@@ -291,6 +307,7 @@ CR驗船中心,2
 監理科,5
 監理科,5
 監理科,5
+
 港政科,8
 港政科,8
 港政科,8
@@ -301,6 +318,7 @@ CR驗船中心,2
 港政科,8
 港政科,8
 港政科,8
+
 海技科,6
 海技科,6
 海技科,6
@@ -311,6 +329,7 @@ CR驗船中心,2
 海技科,6
 海技科,6
 海技科,6
+
 海技科,9
 海技科,9
 海技科,9
@@ -321,6 +340,7 @@ CR驗船中心,2
 海技科,9
 海技科,9
 政風,9
+
 安平航港科,10
 安平航港科,10
 安平航港科,10
@@ -406,7 +426,6 @@ CR驗船中心,2
             const people = matches[table];
             const isVip = table === '主';
             
-            // --- 智慧合併 ---
             const countMap = {};
             people.forEach(p => {
                 countMap[p] = (countMap[p] || 0) + 1;
