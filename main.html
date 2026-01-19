@@ -16,25 +16,33 @@
         .title { font-size: 52px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .subtitle { font-size: 18px; color: rgba(255,255,255,0.6); margin-top: 5px; letter-spacing: 2px; }
 
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; margin-bottom: 30px; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; margin-bottom: 40px; }
         .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; }
         .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.1); border-color: #ffd700; }
         .icon { font-size: 32px; margin-bottom: 5px; }
         .card-title { font-size: 16px; font-weight: bold; color: #ffd700; }
 
-        /* --- 單位快速選擇區 (分類佈局) --- */
+        /* --- 單位快速選擇區 --- */
         .search-container { width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
         
-        .nav-section { width: 100%; margin-bottom: 20px; text-align: center; }
-        .nav-label { font-size: 14px; color: #ffd700; font-weight: bold; margin-bottom: 10px; display: block; letter-spacing: 2px; border-bottom: 1px solid rgba(255,215,0,0.2); padding-bottom: 5px; }
+        /* 核心指示標題 (已修正文字) */
+        .find-table-header {
+            font-size: 24px; color: #ffd700; font-weight: 900; margin-bottom: 25px;
+            letter-spacing: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            background: rgba(255, 255, 255, 0.1); padding: 10px 40px; border-radius: 50px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .nav-section { width: 100%; margin-bottom: 25px; text-align: center; }
+        .nav-label { font-size: 14px; color: rgba(255, 215, 0, 0.7); font-weight: bold; margin-bottom: 12px; display: block; letter-spacing: 2px; }
         .nav-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 
         .nav-btn {
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ddd; padding: 8px 16px; border-radius: 4px; cursor: pointer;
+            color: #ddd; padding: 8px 18px; border-radius: 4px; cursor: pointer;
             font-size: 14px; transition: 0.2s;
         }
-        .nav-btn:hover { background: #ffd700; color: #000; border-color: #fff; }
+        .nav-btn:hover { background: #ffd700; color: #000; border-color: #fff; transform: scale(1.05); }
         .nav-btn.active { background: #ffd700; color: #000; font-weight: bold; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
 
         .search-bar { width: 100%; max-width: 500px; background: rgba(0,0,0,0.4); padding: 12px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
@@ -47,6 +55,7 @@
         .table-count { float: right; font-size: 12px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; color: #ffd700; }
         .person-list { font-size: 14px; line-height: 1.8; color: #ccc; }
         .highlight { color: #ffd700; font-weight: bold; background: rgba(255,215,0,0.1); border-radius: 2px; }
+        
         .clock { position: fixed; top: 20px; right: 30px; font-family: monospace; font-size: 24px; color: rgba(255,255,255,0.3); }
         @keyframes popIn { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
     </style>
@@ -68,6 +77,8 @@
 
 <div class="search-container">
     
+    <div class="find-table-header">請選擇單位尋找桌次</div>
+
     <div class="nav-section">
         <span class="nav-label">─ 內部單位 ─</span>
         <div class="nav-btns">
@@ -246,13 +257,11 @@ CR驗船中心,2
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // 強化版快速過濾：支援多關鍵字 (| 隔開)
+    // 強化版快速過濾
     function quickFilter(query, btnText) {
-        // 設定搜尋框並觸發搜尋 (若有多關鍵字，使用 | )
         document.getElementById('searchInput').value = query;
         smartSearch();
         
-        // 切換按鈕激活狀態
         document.querySelectorAll('.nav-btn').forEach(btn => {
             if(btn.innerText === btnText) btn.classList.add('active');
             else btn.classList.remove('active');
@@ -266,13 +275,11 @@ CR驗船中心,2
         resultGrid.innerHTML = "";
         if (!input) return;
 
-        // 支援多關鍵字搜尋 (例如: 局長|隨行)
         const queries = input.split('|');
         const lines = db.split('\n');
         let matches = {}; 
 
         for (let line of lines) {
-            // 只要符合任一關鍵字就抓出來
             const isMatch = queries.some(q => line.includes(q));
             if (isMatch) {
                 const parts = line.split(/[,\s\t]+/);
@@ -300,7 +307,6 @@ CR驗船中心,2
             const people = matches[table];
             const isVip = table === '主';
             const peopleHtml = people.map(p => {
-                // 將所有關鍵字高亮
                 let displayName = p;
                 queries.forEach(q => {
                     const regex = new RegExp(q, 'gi');
