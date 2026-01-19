@@ -92,9 +92,9 @@
 </head>
 <body>
 
-<button class="expand-btn hidden" onclick="toggleSidebar(true)">⚙️ 設定</button>
+<button class="expand-btn" onclick="toggleSidebar(true)">⚙️ 設定</button>
 
-<div class="admin-panel" id="adminPanel">
+<div class="admin-panel collapsed" id="adminPanel">
     <button class="collapse-btn" onclick="toggleSidebar(false)">❮</button>
     <h3>名單資料庫標記 (Tag)</h3>
     <textarea id="dataInput" oninput="updateAll()" placeholder="格式：姓名,桌號">局長葉協隆,主
