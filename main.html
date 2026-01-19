@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南航115年聯誼活動總控中心</title>
+    <style>
+        body { 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            background: radial-gradient(circle at center, #0f2027 0%, #203a43 50%, #2c5364 100%); 
+            color: #fff; margin: 0; height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-start; overflow-y: auto;
+            padding-top: 60px; box-sizing: border-box;
+        }
+        .header { text-align: center; margin-bottom: 40px; flex-shrink: 0; }
+        .title { font-size: 56px; font-weight: 900; margin: 0; letter-spacing: 5px; background: linear-gradient(to bottom, #cfc7f8 0%, #ebbba7 100%); -webkit-background-clip: text; color: transparent; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .subtitle { font-size: 20px; color: rgba(255,255,255,0.6); margin-top: 10px; letter-spacing: 2px; }
+
+        /* 功能卡片 */
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 80%; max-width: 1000px; margin-bottom: 40px; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; }
+        .card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); border-color: #ffd700; box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .icon { font-size: 40px; margin-bottom: 10px; }
+        .card-title { font-size: 20px; font-weight: bold; margin-bottom: 5px; color: #ffd700; }
+        .card-desc { font-size: 13px; color: #ccc; line-height: 1.4; }
+
+        /* 智慧搜尋 */
+        .search-container { width: 85%; max-width: 900px; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
+        .search-bar { width: 100%; max-width: 600px; background: rgba(0,0,0,0.4); padding: 15px 25px; border-radius: 50px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 30px; }
+        .search-input { flex-grow: 1; background: transparent; border: none; color: #fff; font-size: 20px; padding: 0 15px; outline: none; text-align: center; }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; }
+        .result-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px; border-left: 5px solid #00e676; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .result-card.vip { border-left-color: #ffd700; background: rgba(255, 215, 0, 0.1); }
+        .table-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+        .table-count { float: right; font-size: 13px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; color: #ffd700; }
+        .person-list { font-size: 14px; line-height: 1.6; color: #ddd; }
+        .highlight { color: #ffd700; font-weight: bold; }
+        .clock { position: fixed; top: 20px; right: 30px; font-family: monospace; font-size: 24px; color: rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body>
+
+<div class="clock" id="clock">00:00:00</div>
+
+<div class="header">
+    <h1 class="title">南航 115 年聯誼活動</h1>
+    <div class="subtitle">交通部航港局南部航務中心 | 員工聯誼暨 CIQS 茶會</div>
+</div>
+
+<div class="grid-container">
+    <a href="index.html" target="_blank" class="card">
+        <div class="icon">🗺️</div>
+        <div class="card-title">座位配置圖</div>
+        <div class="card-desc">發送同仁連結<br>(index.html)</div>
+    </a>
+    <a href="list.html" target="_blank" class="card">
+        <div class="icon">📋</div>
+        <div class="card-title">詳細名冊</div>
+        <div class="card-desc">單位職稱排序<br>(list.html)</div>
+    </a>
+    <a href="lottery.html" target="_blank" class="card">
+        <div class="icon">🎰</div>
+        <div class="card-title">幸運抽獎</div>
+        <div class="card-desc">互動抽獎系統<br>(lottery.html)</div>
+    </a>
+</div>
+
+<div class="search-container">
+    <div class="search-bar">
+        <span style="font-size:24px;">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="輸入姓名、單位或職稱快速查桌次..." oninput="smartSearch()" autocomplete="off">
+    </div>
+    <div id="resultGrid" class="result-grid"></div>
+</div>
+
+<textarea id="database" style="display:none;">
+局長葉協隆,主
+主任張博彥,主
+前主秘余建勳,主
+國際輪船理事長,主
+倉庫公會理事長,主
+裝卸公會理事長,主
+理貨公會理事長,主
+船代公會理事長,主
+引水人公會主任,主
+CDC,主
+CR驗船中心處長,主
+港務消防戴副大隊長,主
+副主任,4
+港政科科長,4
+港政科視察,4
+港政科專員,4
+港政科專員,4
+監理科專員,4
+CDC,4
+裝卸公會,4
+裝卸公會,4
+裝卸公會,4
+郭簡任技正,3
+航安科專員,3
+航安科專員,3
+航安科,3
+裝卸公會,3
+裝卸公會,3
+裝卸公會,3
+引水人公會李汶彥,3
+引水人公會李崇岱,3
+國際輪船總幹事,3
+黃簡任技正,2
+海技科科長,2
+海技科技正,2
+海技科技正,2
+海技科專員,2
+安平航港科技正,2
+CR驗船中心,2
+港勤公司,2
+港勤公司,2
+余建勳夫人,2
+吳專門委員,1
+安平航港科科長,1
+安平航港科視察,1
+安平航港科專員,1
+監理科科長,1
+監理科視察,1
+船代公會,1
+船代公會,1
+船代公會,1
+局長隨行秘書,1
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科,7
+航安科(素食),7
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科,11
+航安科(素食),11
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+監理科,5
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+港政科,8
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,6
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+海技科,9
+政風,9
+安平航港科,10
+安平航港科,10
+安平航港科,10
+安平航港科,10
+安平航港科,10
+安平航港科,10
+港政科,10
+港政科,10
+安平航港科,10
+安平航港科,10
+</textarea>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', {hour12:false});
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function smartSearch() {
+        const input = document.getElementById('searchInput').value.trim();
+        const resultGrid = document.getElementById('resultGrid');
+        const db = document.getElementById('database').value;
+        resultGrid.innerHTML = "";
+        if (!input) return;
+        const lines = db.split('\n');
+        let matches = {}; 
+        for (let line of lines) {
+            if (line.includes(input)) {
+                const parts = line.split(/[,\s\t]+/);
+                if (parts.length >= 2) {
+                    const tableNum = parts[parts.length - 1].trim();
+                    const name = parts.slice(0, parts.length - 1).join(' ').trim();
+                    if (!matches[tableNum]) matches[tableNum] = [];
+                    matches[tableNum].push(name);
+                }
+            }
+        }
+        const sortedKeys = Object.keys(matches).sort((a, b) => {
+            if (a === '主') return -1;
+            if (b === '主') return 1;
+            return parseInt(a) - parseInt(b);
+        });
+        if (sortedKeys.length === 0) {
+            resultGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ff6b6b; font-size:18px;">❌ 查無資料</div>`;
+            return;
+        }
+        sortedKeys.forEach(table => {
+            const people = matches[table];
+            const isVip = table === '主';
+            const peopleHtml = people.map(p => {
+                const regex = new RegExp(input, 'gi');
+                const highlightedName = p.replace(regex, match => `<span class="highlight">${match}</span>`);
+                return `<div>• ${highlightedName}</div>`;
+            }).join('');
+            const card = document.createElement('div');
+            card.className = `result-card ${isVip ? 'vip' : ''}`;
+            card.innerHTML = `<div class="table-title">${isVip?'主 桌':`第 ${table} 桌`}<span class="table-count">${people.length}人</span></div><div class="person-list">${peopleHtml}</div>`;
+            resultGrid.appendChild(card);
+        });
+    }
+</script>
+
+</body>
+</html>
