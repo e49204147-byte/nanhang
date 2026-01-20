@@ -353,7 +353,7 @@ CR驗船中心,2
 <script>
     // --- 閒置檢測與自動重置功能 ---
     let idleTimer;
-    const idleLimit = 40000; // 40秒無動作則重置 (毫秒)
+    const idleLimit = 30000; // 30秒無動作則重置 (毫秒)
 
     function resetTimer() {
         clearTimeout(idleTimer);
