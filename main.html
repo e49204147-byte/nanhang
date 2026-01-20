@@ -90,15 +90,13 @@
         
         .map-row-vip { grid-column: 1 / -1; display: flex; justify-content: center; margin-bottom: 10px; }
         
-        /* --- 修正處：主桌改為正圓形 --- */
         .map-vip { 
-            width: 100px; height: 100px; /* 長寬相等 */
-            border-radius: 50%;          /* 50% 為正圓 */
+            width: 100px; height: 100px; 
+            border-radius: 50%; 
             border: 2px solid #ffd700; color: #ffd700; 
             background: rgba(255, 215, 0, 0.1); font-size: 18px; 
             display: flex; align-items: center; justify-content: center; font-weight: bold; 
         }
-        /* --------------------------- */
 
         .map-divider { grid-column: span 4; height: 1px; background: none; border-top: 1px dashed #555; margin: 5px 0; position: relative; }
         .map-divider::after { content: '走 道'; position: absolute; left: 50%; top: -10px; transform: translateX(-50%); background: #203a43; padding: 0 5px; color: #555; font-size: 12px; }
@@ -128,7 +126,6 @@
             .card { padding: 10px; }
             .icon { font-size: 20px; }
             .card-title { font-size: 12px; }
-            /* 主桌縮小一點適應手機 */
             .map-vip { width: 80px; height: 80px; font-size: 16px; }
             .clock { font-size: 16px; top: 10px; right: 10px; }
         }
@@ -211,8 +208,8 @@
 <div class="footer-nav">
     <div class="footer-label">─ 功能快捷區 ─</div>
     <div class="grid-container">
-        <a href="index.html" target="_blank" class="card"><div class="icon">🗺️</div><div class="card-title">整體座位配置圖</div></a>
-        <a href="list.html" target="_blank" class="card"><div class="icon">📋</div><div class="card-title">局內詳細名冊</div></a>
+        <a href="index.html" target="_blank" class="card"><div class="icon">🗺️</div><div class="card-title">座位配置圖</div></a>
+        <a href="list.html" target="_blank" class="card"><div class="icon">📋</div><div class="card-title">詳細名冊</div></a>
         <a href="lottery.html" target="_blank" class="card"><div class="icon">🎰</div><div class="card-title">幸運抽獎</div></a>
     </div>
 </div>
@@ -354,6 +351,39 @@ CR驗船中心,2
 </textarea>
 
 <script>
+    // --- 閒置檢測與自動重置功能 ---
+    let idleTimer;
+    const idleLimit = 40000; // 40秒無動作則重置 (毫秒)
+
+    function resetTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(goHome, idleLimit);
+    }
+
+    function goHome() {
+        // 1. 捲動回最上方
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 2. 清空搜尋框
+        const input = document.getElementById('searchInput');
+        if(input) input.value = '';
+
+        // 3. 重置搜尋結果 (呼叫 smartSearch 會自動清空畫面)
+        smartSearch();
+
+        // 4. 移除所有按鈕的 active 狀態
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    }
+
+    // 監聽各種使用者動作來重置計時器
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.ontouchstart = resetTimer; // 針對觸控螢幕
+    document.onclick = resetTimer;
+    document.onscroll = resetTimer;
+    // ---------------------------
+
     function updateClock() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', {hour12:false});
