@@ -48,7 +48,7 @@
     </header>
 
     <div class="search-box">
-        <input type="text" id="nameSearch" oninput="filterNames()" placeholder="🔍 輸入姓名快速查詢...">
+        <input type="text" id="nameSearch" placeholder="🔍 輸入姓名快速查詢...">
     </div>
 
     <div class="summary">公告參加總人數：<span id="totalCount">93</span> 人</div>
@@ -75,6 +75,7 @@
     const finalDisplayList = [director, ...staffNames, secretary];
 
     const grid = document.getElementById('nameGrid');
+    
     function renderNames(data) {
         grid.innerHTML = data.map(item => `
             <div class="name-item ${item.pinned ? 'pinned' : ''}">
@@ -84,13 +85,36 @@
         `).join('');
     }
 
+    // 初始渲染
     renderNames(finalDisplayList);
 
-    function filterNames() {
-        const query = document.getElementById('nameSearch').value.toLowerCase();
+    // --- 關鍵修正：中文輸入法 (IME) 處理 ---
+    const searchInput = document.getElementById('nameSearch');
+    let isComposing = false; // 是否正在選字狀態
+
+    function performSearch() {
+        const query = searchInput.value.toLowerCase();
         const filtered = finalDisplayList.filter(item => item.name.toLowerCase().includes(query));
         renderNames(filtered);
     }
+
+    // 1. 開始選字時，標記為「組字中」
+    searchInput.addEventListener('compositionstart', () => {
+        isComposing = true;
+    });
+
+    // 2. 選字結束時 (底線消失)，立即觸發搜尋
+    searchInput.addEventListener('compositionend', () => {
+        isComposing = false;
+        performSearch();
+    });
+
+    // 3. 一般輸入時 (如英文或複製貼上)，如果沒在選字就搜尋
+    searchInput.addEventListener('input', () => {
+        if (!isComposing) {
+            performSearch();
+        }
+    });
 </script>
 
 </body>
