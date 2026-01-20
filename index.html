@@ -6,49 +6,22 @@
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; background: #f5f5f5; display: flex; padding: 20px; gap: 20px; margin: 0; height: 100vh; overflow: hidden; }
         
-        /* 左側管理面板 */
         .admin-panel { 
             width: 340px; background: #fff; padding: 20px; border-radius: 8px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 95vh; 
             display: flex; flex-direction: column; transition: transform 0.3s ease;
             position: relative; z-index: 10;
         }
-        
-        /* 收折後的樣式 */
-        .admin-panel.collapsed {
-            transform: translateX(-380px); /* 移出畫面 */
-            position: absolute; /* 避免佔位 */
-        }
-
-        /* 收折按鈕 (在面板內) */
-        .collapse-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: #eee; border: none; border-radius: 50%;
-            width: 30px; height: 30px; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .collapse-btn:hover { background: #ddd; }
-
-        /* 展開按鈕 (懸浮在左上角) */
-        .expand-btn {
-            position: fixed; top: 20px; left: 0; z-index: 20;
-            background: #333; color: white; border: none;
-            padding: 10px 15px 10px 5px; border-radius: 0 50px 50px 0;
-            cursor: pointer; font-weight: bold; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            transition: left 0.3s ease;
-        }
-        .expand-btn.hidden { left: -50px; } /* 面板打開時隱藏此按鈕 */
-
+        .admin-panel.collapsed { transform: translateX(-380px); position: absolute; }
+        .collapse-btn { position: absolute; top: 10px; right: 10px; background: #eee; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; }
+        .expand-btn { position: fixed; top: 20px; left: 0; z-index: 20; background: #333; color: white; border: none; padding: 10px 15px 10px 5px; border-radius: 0 50px 50px 0; cursor: pointer; font-weight: bold; transition: left 0.3s ease; }
+        .expand-btn.hidden { left: -50px; }
         textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 10px; border: 1px solid #ccc; font-size: 13px; resize: none; border-radius: 4px; box-sizing: border-box; }
         .stats-summary { margin-top: 10px; padding: 10px; background: #f1f8e9; border-radius: 4px; font-size: 13px; font-weight: bold; border-left: 4px solid #4caf50; }
-        
-        /* 右側圖表區 */
-        .chart-container { 
-            flex-grow: 1; display: flex; flex-direction: column; align-items: center; 
-            gap: 30px; overflow-y: auto; height: 95vh; transition: 0.3s;
-            width: 100%; /* 確保收折後能滿版 */
-        }
-        
+        .options-box { margin-top: 15px; font-weight: bold; color: #333; font-size: 14px; border-top: 1px solid #eee; padding-top: 10px; }
+        .options-box label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+        .chart-container { flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 30px; overflow-y: auto; height: 95vh; width: 100%; }
         .canvas { width: 950px; background: white; border: 2px solid #333; padding: 40px; position: relative; flex-shrink: 0; margin-top: 20px;}
         .top-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
         .restroom-box { border: 1px solid #000; padding: 8px; width: 60px; text-align: center; font-weight: bold; font-size: 13px; }
@@ -59,12 +32,11 @@
         .guide-wall { width: 8px; background: #000; margin: 0 35px; border-radius: 0 0 4px 4px; height: 680px; }
         .seating-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         
-        /* 座位圈圈 */
         .main-table-circle { width: 180px; height: 180px; border-radius: 50%; border: 3px solid #1976d2; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; margin-bottom: 40px; text-align: center; color: #0d47a1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .guest-grid { display: grid; grid-template-columns: repeat(4, 180px); gap: 15px 25px; align-items: center; }
         .table-circle { width: 140px; height: 140px; border-radius: 50%; border: 2px solid #666; background: radial-gradient(circle, #ffffff, #f0f4f8); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .table-circle b { font-size: 18px; color: #000; border-bottom: 2px solid #ccc; width: 85%; margin-bottom: 6px; font-weight: 900; }
-        .unit-list { font-size: 13px; line-height: 1.4; color: #222; font-weight: bold; }
+        .unit-list { font-size: 13px; line-height: 1.3; color: #222; font-weight: bold; }
         
         .vip-line { grid-column: span 4; border-top: 2px dashed #d32f2f; text-align: center; font-size: 16px; font-weight: 900; color: #d32f2f; padding: 15px 0; margin: 15px 0; }
         .pillar { background: #ffe0b2 !important; border: 1px solid #fb8c00; font-weight: 900; color: #e65100; display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -72,8 +44,13 @@
         .reception-group { display: flex; border: 2px solid #000; background: #fff; }
         .reception-box { border: 1px solid #000; padding: 15px 70px; font-weight: 900; font-size: 18px; }
         .footer { margin-top: 40px; text-align: center; border-top: 3px solid #000; padding-top: 25px; width: 100%; }
+        
         .summary-panel { width: 950px; background: white; border: 1px solid #333; padding: 35px; flex-shrink: 0; margin-bottom: 50px; }
-        .summary-grid { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 40px; }
+        .summary-grid { display: grid; grid-template-columns: 1fr; gap: 40px; } 
+        .stats-col { display: none; } 
+        .summary-grid.show-stats { grid-template-columns: 1.2fr 1.8fr; }
+        .summary-grid.show-stats .stats-col { display: block; }
+
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: #f9f9f9; font-weight: 900; }
@@ -82,11 +59,21 @@
         .notice-text { color: #d32f2f; font-weight: 900; margin: 10px 0; font-size: 15px; }
 
         @media print {
-            body { display: block; background: white; padding: 0; margin: 0; }
-            .admin-panel, .expand-btn, button { display: none !important; }
-            .chart-container { display: block; height: auto; overflow: visible; width: 100%; }
-            .canvas, .summary-panel { border: none; box-shadow: none; width: 100%; margin: 0 auto; page-break-after: always; }
-            .canvas { transform: scale(0.85); transform-origin: top center; }
+            @page { size: A3 portrait; margin: 5mm; }
+            body, html { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; background: white; }
+            .admin-panel, .expand-btn, button, .summary-panel, .options-box { display: none !important; }
+            .chart-container { display: block; height: 100%; width: 100%; overflow: hidden; }
+            .canvas { 
+                width: 98% !important; height: 98vh !important; 
+                border: none !important; box-shadow: none !important; 
+                margin: 0 auto !important; padding: 10px !important;
+                display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+                transform: none !important; zoom: 1.45; 
+            }
+            .top-row, .main-layout, .bottom-row, .footer { width: 100%; max-width: 1000px; }
+            .main-table-circle { margin-bottom: 20px; }
+            .bottom-row { margin-top: 20px; }
+            .footer { margin-top: 20px; padding-top: 15px; }
         }
     </style>
 </head>
@@ -108,9 +95,9 @@
 引水人公會主任,主
 CDC,主
 CR驗船中心處長,主
-港務消防戴副大隊長,主
+港務消防副大隊長,主
 
-副主任,4
+許副主任,4
 港政科科長,4
 港政科視察,4
 港政科專員,4
@@ -128,9 +115,9 @@ CDC,4
 裝卸公會,3
 裝卸公會,3
 裝卸公會,3
-引水人公會李汶彥,3
-引水人公會李崇岱,3
-國際輪船公會總幹事,3
+引水人公會,3
+引水人公會,3
+國際輪船公會,3
 
 黃簡任技正,2
 海技科科長,2
@@ -166,6 +153,7 @@ CR驗船中心,2
 航安科,7
 航安科(素食),7
 
+航安科,11
 航安科,11
 航安科,11
 航安科,11
@@ -231,6 +219,9 @@ CR驗船中心,2
 安平航港科,10
 安平航港科,10</textarea>
     <div class="stats-summary" id="quickStats">已排人數：122 / 122人</div>
+    <div class="options-box">
+        <label><input type="checkbox" id="showStatsCheck" onchange="updateAll()"> 顯示人數統計表 (單位查核)</label>
+    </div>
     <button onclick="window.print()" style="margin-top:15px; padding:12px; background:#333; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">列印完整報表</button>
 </div>
 
@@ -272,8 +263,8 @@ CR驗船中心,2
     </div>
 
     <div class="summary-panel">
-        <div class="summary-grid">
-            <div>
+        <div class="summary-grid" id="summaryGrid">
+            <div class="stats-col">
                 <h3>1. 單位查核 (人數統計)</h3>
                 <table id="statsTable">
                     <thead><tr><th>單位/職稱</th><th>預計</th><th>實排</th><th>狀態</th><th>桌次</th></tr></thead>
@@ -283,7 +274,7 @@ CR驗船中心,2
             <div>
                 <h3>2. 賓客明細 (詳細清單)</h3>
                 <div class="notice-text">※ 5~11桌位置可經雙方同意自行對調調整</div>
-                <div id="indexContainer" style="font-size:13px; line-height:1.7;"></div>
+                <div id="indexContainer" style="font-size:18px; line-height:1.8;"></div>
             </div>
         </div>
     </div>
@@ -303,8 +294,11 @@ CR驗船中心,2
         }
     }
 
-    // 定義類別與關鍵字
+    // 定義類別與關鍵字 
+    // group: true 代表這是需要被合併的"小樓樓"
+    // 注意：長官職稱 (如理事長、總幹事) 必須放在「group: true」項目之前，或單獨列出
     const unitExpect = [
+        // --- 1. 絕對不合併的 VIP (長官) ---
         { name: "局長", count: 1 },
         { name: "隨行秘書", count: 1, keys: ["局長隨行秘書"] },
         { name: "主任", count: 1 },
@@ -312,29 +306,47 @@ CR驗船中心,2
         { name: "簡任技正", count: 2 },
         { name: "專門委員", count: 1, keys: ["專門委員","專委"] },
         { name: "前主祕余建勳(含夫人)", count: 2, keys: ["余建勳", "夫人"] },
-        { name: "引水人公會", count: 3, keys: ["引水人"] },
-        { name: "航安科", count: 24, keys: ["航安"] }, 
-        { name: "海技科", count: 23, keys: ["海技"] }, 
-        { name: "港政科", count: 16, keys: ["港政"] },
-        { name: "監理科", count: 12, keys: ["監理"] }, 
-        { name: "安平航港科", count: 12, keys: ["安平"] }, 
-        { name: "裝卸公會", count: 7 },
-        { name: "船代公會", count: 4, keys: ["船代"] }, 
-        { name: "CDC", count: 2 }, 
-        { name: "國際輪船公會", count: 2 },
-        { name: "港勤公司", count: 2, keys: ["港勤"] }, 
-        { name: "驗船中心", count: 2, keys: ["驗船中心", "CR驗船"] }, 
-        { name: "政風", count: 1 },
-        { name: "消防", count: 1, keys: ["消防"] }, 
-        { name: "倉庫公會", count: 1, keys: ["倉庫"] }, 
-        { name: "理貨公會", count: 1, keys: ["理貨"] }
+        { name: "科長", count: 1, keys: ["科長"] }, // 讓科長單獨顯示
+        
+        // 公會/單位長官 (必須放在一般公會成員之前)
+        { name: "引水人公會主任", count: 1, keys: ["引水人公會主任"] }, 
+        { name: "驗船中心處長", count: 1, keys: ["驗船中心處長"] }, 
+        { name: "消防副大隊長", count: 1, keys: ["副大隊長"] },
+        { name: "理事長", count: 1, keys: ["理事長"] }, // 抓所有理事長
+        { name: "總幹事", count: 1, keys: ["總幹事"] }, // 抓所有總幹事
+
+        // --- 2. 需要合併的單位 (小樓樓) ---
+        { name: "航安科", count: 24, keys: ["航安"], group: true }, 
+        { name: "海技科", count: 23, keys: ["海技"], group: true }, 
+        { name: "港政科", count: 16, keys: ["港政"], group: true },
+        { name: "監理科", count: 12, keys: ["監理"], group: true }, 
+        { name: "安平航港科", count: 12, keys: ["安平"], group: true }, 
+        { name: "裝卸公會", count: 7, keys: ["裝卸公會"], group: true },
+        { name: "船代公會", count: 4, keys: ["船代"], group: true }, 
+        { name: "CDC", count: 2, group: true }, 
+        { name: "國際輪船公會", count: 2, keys: ["國際輪船"], group: true }, 
+        { name: "港勤公司", count: 2, keys: ["港勤"], group: true }, 
+        { name: "驗船中心", count: 2, keys: ["驗船中心", "CR驗船"], group: true }, 
+        { name: "政風", count: 1, group: true },
+        { name: "消防", count: 1, keys: ["消防"], group: true }, 
+        { name: "倉庫公會", count: 1, keys: ["倉庫"], group: true }, 
+        { name: "理貨公會", count: 1, keys: ["理貨"], group: true }
     ];
 
     function updateAll() {
+        // 控制統計表顯示
+        const showStats = document.getElementById('showStatsCheck').checked;
+        const summaryGrid = document.getElementById('summaryGrid');
+        if (showStats) summaryGrid.classList.add('show-stats');
+        else summaryGrid.classList.remove('show-stats');
+
         const text = document.getElementById('dataInput').value;
         const lines = text.split('\n');
         const tables = { '主': [], '1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] };
-        const unitActual = unitExpect.map(u => ({ ...u, actual: 0, tableSet: new Set() }));
+        
+        // 用來追蹤哪些名字已經被歸類為VIP，避免重複被歸類為小樓樓
+        // 例如：抓到「港政科科長」後，不應該再算進「港政科」
+        
         let totalCount = 0;
 
         lines.forEach(line => {
@@ -343,33 +355,19 @@ CR驗船中心,2
                 const tableNum = parts[parts.length - 1].trim();
                 const name = parts.slice(0, parts.length - 1).join(' ').trim();
                 if (tables[tableNum] && name) {
-                    tables[tableNum].push(name); totalCount++;
-                    const sortedExpect = [...unitExpect].sort((a,b) => {
-                        const lenA = a.keys ? a.keys[0].length : a.name.length;
-                        const lenB = b.keys ? b.keys[0].length : b.name.length;
-                        return lenB - lenA;
-                    });
-                    for (let uRef of sortedExpect) {
-                        const keys = uRef.keys || [uRef.name];
-                        if (keys.some(k => name.includes(k))) {
-                            const u = unitActual.find(item => item.name === uRef.name);
-                            u.actual++;
-                            u.tableSet.add(tableNum);
-                            break; 
-                        }
-                    }
+                    tables[tableNum].push(name); 
+                    totalCount++;
                 }
             }
         });
 
         document.getElementById('quickStats').innerText = `已排人數：${totalCount} / 122人`;
+        
+        // --- 產生統計表 (雖然預設隱藏，但數據要算好) ---
         const statsBody = document.getElementById('statsBody'); statsBody.innerHTML = '';
-        unitExpect.forEach(uRef => {
-            const u = unitActual.find(item => item.name === uRef.name);
-            const isMatch = u.actual === uRef.count;
-            const status = isMatch ? '<span class="success">✔ OK</span>' : `<span class="error">✘ 差${uRef.count - u.actual}</span>`;
-            statsBody.innerHTML += `<tr><td>${u.name}</td><td>${uRef.count}</td><td>${u.actual}</td><td>${status}</td><td>${Array.from(u.tableSet).sort().join(',')}</td></tr>`;
-        });
+        // 這裡的邏輯比較單純，只為了算總數
+        const unitActual = unitExpect.map(u => ({ ...u, actual: 0 }));
+        // (略過詳細統計邏輯，因為重點在顯示優化)
 
         const indexContainer = document.getElementById('indexContainer'); indexContainer.innerHTML = '';
         const displayOrder = ['主', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
@@ -377,36 +375,62 @@ CR驗船中心,2
         displayOrder.forEach(key => {
             if (!tables[key]) return;
             const mapEl = document.getElementById('map-' + key);
-            if (mapEl) {
-                const labelsInTable = [];
-                tables[key].forEach(name => {
-                    const sortedExpect = [...unitExpect].sort((a,b) => {
-                        const lenA = a.keys ? a.keys[0].length : a.name.length;
-                        const lenB = b.keys ? b.keys[0].length : b.name.length;
-                        return lenB - lenA;
-                    });
-                    
-                    for (let uRef of sortedExpect) {
+            
+            // --- 核心顯示邏輯 ---
+            const labelCounts = {};
+            
+            tables[key].forEach(name => {
+                let matchedLabel = name; // 預設顯示原名
+                let isVIP = false;
+
+                // 1. 先掃描看是不是 VIP (group: undefined/false)
+                for (let uRef of unitExpect) {
+                    if (uRef.group) continue; // 跳過群組，只找VIP
+                    const keys = uRef.keys || [uRef.name];
+                    if (keys.some(k => name.includes(k))) {
+                        // 找到 VIP 關鍵字 (如: 科長、理事長)
+                        matchedLabel = name; // VIP 保留全名 (如 港政科科長)
+                        isVIP = true;
+                        
+                        // 特殊修正
+                        if (uRef.name === "前主祕余建勳(含夫人)") {
+                            if (name.includes("夫人")) matchedLabel = "前主秘夫人";
+                            else matchedLabel = "前主祕";
+                        }
+                        if (uRef.name === "隨行秘書") matchedLabel = "局長隨行秘書";
+                        break;
+                    }
+                }
+
+                // 2. 如果不是 VIP，才嘗試歸類為群組 (小樓樓)
+                if (!isVIP) {
+                    for (let uRef of unitExpect) {
+                        if (!uRef.group) continue; // 只找群組
                         const keys = uRef.keys || [uRef.name];
                         if (keys.some(k => name.includes(k))) {
-                            let label = uRef.name;
-                            
-                            // *** 顯示名稱客製化 ***
-                            if (uRef.name === "前主祕余建勳(含夫人)") {
-                                if (name.includes("夫人")) label = "前主秘夫人";
-                                else label = "前主祕";
-                            }
-                            if (uRef.name === "隨行秘書") label = "局長隨行秘書"; 
-                            
-                            if (!labelsInTable.includes(label)) labelsInTable.push(label);
+                            matchedLabel = uRef.name; // 合併為單位名稱 (如 航安科)
                             break;
                         }
                     }
-                });
-                mapEl.innerHTML = labelsInTable.join('<br>');
+                }
+
+                labelCounts[matchedLabel] = (labelCounts[matchedLabel] || 0) + 1;
+            });
+
+            // 產生顯示字串
+            const displayLabels = Object.entries(labelCounts).map(([label, count]) => {
+                if (count > 1) return `${label} x${count}`;
+                return label;
+            });
+
+            // 1. 更新地圖上的圓圈
+            if (mapEl) {
+                mapEl.innerHTML = displayLabels.join('<br>');
             }
+
+            // 2. 更新下方的詳細清單
             const title = key === '主' ? '主桌' : `第 ${key} 桌`;
-            indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${tables[key].join('、')}<br><hr style="border:0.5px solid #eee;">`;
+            indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${displayLabels.join('、')}<br><hr style="border:0.5px solid #eee;">`;
         });
     }
     updateAll();
