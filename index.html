@@ -293,7 +293,8 @@ CR驗船中心,2
     const unitKeywords = ["航安科", "海技科", "港政科", "監理科", "安平航港科", "安平科", "裝卸公會", "船代公會", "CDC", "國際輪船", "港勤", "驗船中心", "政風", "消防", "倉庫", "理貨", "引水人"];
 
     // 2. 定義「必須保留的職稱」 (List 中若出現這些字，絕對不合併)
-    const titlesToKeep = ["局長", "隨行秘書", "主任", "副主任", "技正", "專門委員", "專委", "主秘", "夫人", "科長", "視察", "專員", "理事長", "總幹事", "處長", "大隊長", "隊長"];
+    // 3. 注意：這裡加入了 "素" 作為關鍵字，確保 List 中會保留全名
+    const titlesToKeep = ["局長", "隨行秘書", "主任", "副主任", "技正", "專門委員", "專委", "主秘", "夫人", "科長", "視察", "專員", "理事長", "總幹事", "處長", "大隊長", "隊長", "素", "素食"];
 
     function updateAll() {
         const showStats = document.getElementById('showStatsCheck').checked;
@@ -319,8 +320,6 @@ CR驗船中心,2
         });
 
         document.getElementById('quickStats').innerText = `已排人數：${totalCount} / 122人`;
-        
-        // (略過詳細統計表計算，以簡化程式碼)
         document.getElementById('statsBody').innerHTML = "<tr><td colspan='5' style='text-align:center; color:#999;'>統計資料運算已隱藏，僅計算總人數</td></tr>";
 
         const indexContainer = document.getElementById('indexContainer'); indexContainer.innerHTML = '';
@@ -330,25 +329,29 @@ CR驗船中心,2
             if (!tables[key]) return;
             const mapEl = document.getElementById('map-' + key);
             
-            // --- 邏輯 A：地圖圓圈 (極致合併) ---
+            // --- 邏輯 A：地圖圓圈 (極致合併 + 素食分離) ---
             const mapLabelCounts = {};
             tables[key].forEach(name => {
                 let mapLabel = name;
-                // 1. 如果包含「葉協隆」，顯示「局長」 (特殊處理)
-                // 2. 如果包含「單位名稱」，一律合併成單位 (例如：監理科科長 -> 監理科)
                 let merged = false;
                 
-                // 特殊 VIP 保留全名 (局長/主任/隨行秘書/前主秘)
+                // 特殊 VIP 保留全名
                 if (name.includes("葉協隆") || name.includes("隨行") || name.includes("張博彥") || name.includes("前主秘")) {
                     mapLabel = name;
                     if(name.includes("隨行")) mapLabel = "局長隨行秘書";
-                    merged = true; // 標記已處理
+                    merged = true; 
+                } 
+                // 【關鍵修改】：檢查是否為素食 -> 絕對不合併，並標記 merged=true 避免被下方單位合併吃掉
+                else if (name.includes("素")) {
+                    mapLabel = name; // 保留原名 (例如 航安科(素食))
+                    merged = true;   // 阻止進入下方的單位合併
                 }
 
                 if (!merged) {
+                    // 一般合併邏輯 (包含科長、專員等，都吃進單位裡)
                     for (let unit of unitKeywords) {
                         if (name.includes(unit)) {
-                            mapLabel = unit; // 將「監理科科長」縮寫為「監理科」
+                            mapLabel = unit; 
                             break;
                         }
                     }
@@ -356,21 +359,20 @@ CR驗船中心,2
                 mapLabelCounts[mapLabel] = (mapLabelCounts[mapLabel] || 0) + 1;
             });
 
-            // --- 邏輯 B：詳細清單 (保留職稱) ---
+            // --- 邏輯 B：詳細清單 (保留職稱 + 保留素食) ---
             const listLabelCounts = {};
             tables[key].forEach(name => {
                 let listLabel = name;
                 
-                // 1. 檢查是否有「重要職稱」
+                // 檢查是否含有重要職稱 OR 素食
                 const hasTitle = titlesToKeep.some(t => name.includes(t));
                 
                 if (hasTitle) {
-                    // 有職稱 -> 絕對保留原名 (例如：監理科科長 -> 監理科科長)
+                    // 有職稱或素食 -> 保留全名
                     listLabel = name;
-                    // 微調顯示
                     if(name.includes("隨行")) listLabel = "局長隨行秘書";
                 } else {
-                    // 沒職稱 -> 嘗試找單位合併 (例如：監理科 -> 監理科)
+                    // 沒職稱 -> 嘗試找單位合併
                     for (let unit of unitKeywords) {
                         if (name.includes(unit)) {
                             listLabel = unit;
