@@ -97,7 +97,7 @@ CDC,主
 港警總隊總隊長,主
 港務消防副大隊長,主
 
-許副主任,4
+副主任,4
 港政科科長,4
 港政科視察,4
 港政科專員,4
@@ -128,7 +128,7 @@ CR驗船中心,2
 CR驗船中心,2
 港勤公司,2
 港勤公司,2
-前主秘余建勳夫人,2
+余建勳夫人,2
 
 吳專門委員,1
 安平航港科科長,1
@@ -282,60 +282,20 @@ CR驗船中心,2
 </div>
 
 <script>
-    // 切換側邊欄的 JS
     function toggleSidebar(show) {
         const panel = document.getElementById('adminPanel');
         const btn = document.querySelector('.expand-btn');
-        if (show) {
-            panel.classList.remove('collapsed');
-            btn.classList.add('hidden');
-        } else {
-            panel.classList.add('collapsed');
-            btn.classList.remove('hidden');
-        }
+        if (show) { panel.classList.remove('collapsed'); btn.classList.add('hidden'); } 
+        else { panel.classList.add('collapsed'); btn.classList.remove('hidden'); }
     }
 
-    // 定義類別與關鍵字 
-    // group: true 代表這是需要被合併的"小樓樓"
-    // 注意：長官職稱 (如理事長、總幹事) 必須放在「group: true」項目之前，或單獨列出
-    const unitExpect = [
-        // --- 1. 絕對不合併的 VIP (長官) ---
-        { name: "局長", count: 1 },
-        { name: "隨行秘書", count: 1, keys: ["局長隨行秘書"] },
-        { name: "主任", count: 1 },
-        { name: "副主任", count: 1 }, 
-        { name: "簡任技正", count: 2 },
-        { name: "專門委員", count: 1, keys: ["專門委員","專委"] },
-        { name: "前主祕余建勳(含夫人)", count: 2, keys: ["余建勳", "夫人"] },
-        { name: "科長", count: 1, keys: ["科長"] }, // 讓科長單獨顯示
-        
-        // 公會/單位長官 (必須放在一般公會成員之前)
-        { name: "引水人公會主任", count: 1, keys: ["引水人公會主任"] }, 
-        { name: "驗船中心處長", count: 1, keys: ["驗船中心處長"] }, 
-        { name: "消防副大隊長", count: 1, keys: ["副大隊長"] },
-        { name: "理事長", count: 1, keys: ["理事長"] }, // 抓所有理事長
-        { name: "總幹事", count: 1, keys: ["總幹事"] }, // 抓所有總幹事
+    // 1. 定義「純單位」關鍵字 (用來在 Map 中合併，或 List 中沒職稱時合併)
+    const unitKeywords = ["航安科", "海技科", "港政科", "監理科", "安平航港科", "安平科", "裝卸公會", "船代公會", "CDC", "國際輪船", "港勤", "驗船中心", "政風", "消防", "倉庫", "理貨", "引水人"];
 
-        // --- 2. 需要合併的單位 (小樓樓) ---
-        { name: "航安科", count: 24, keys: ["航安"], group: true }, 
-        { name: "海技科", count: 23, keys: ["海技"], group: true }, 
-        { name: "港政科", count: 16, keys: ["港政"], group: true },
-        { name: "監理科", count: 12, keys: ["監理"], group: true }, 
-        { name: "安平航港科", count: 12, keys: ["安平"], group: true }, 
-        { name: "裝卸公會", count: 7, keys: ["裝卸公會"], group: true },
-        { name: "船代公會", count: 4, keys: ["船代"], group: true }, 
-        { name: "CDC", count: 2, group: true }, 
-        { name: "國際輪船公會", count: 2, keys: ["國際輪船"], group: true }, 
-        { name: "港勤公司", count: 2, keys: ["港勤"], group: true }, 
-        { name: "驗船中心", count: 2, keys: ["驗船中心", "CR驗船"], group: true }, 
-        { name: "政風", count: 1, group: true },
-        { name: "消防", count: 1, keys: ["消防"], group: true }, 
-        { name: "倉庫公會", count: 1, keys: ["倉庫"], group: true }, 
-        { name: "理貨公會", count: 1, keys: ["理貨"], group: true }
-    ];
+    // 2. 定義「必須保留的職稱」 (List 中若出現這些字，絕對不合併)
+    const titlesToKeep = ["局長", "隨行秘書", "主任", "副主任", "技正", "專門委員", "專委", "主秘", "夫人", "科長", "視察", "專員", "理事長", "總幹事", "處長", "大隊長", "隊長"];
 
     function updateAll() {
-        // 控制統計表顯示
         const showStats = document.getElementById('showStatsCheck').checked;
         const summaryGrid = document.getElementById('summaryGrid');
         if (showStats) summaryGrid.classList.add('show-stats');
@@ -344,10 +304,6 @@ CR驗船中心,2
         const text = document.getElementById('dataInput').value;
         const lines = text.split('\n');
         const tables = { '主': [], '1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] };
-        
-        // 用來追蹤哪些名字已經被歸類為VIP，避免重複被歸類為小樓樓
-        // 例如：抓到「港政科科長」後，不應該再算進「港政科」
-        
         let totalCount = 0;
 
         lines.forEach(line => {
@@ -364,11 +320,8 @@ CR驗船中心,2
 
         document.getElementById('quickStats').innerText = `已排人數：${totalCount} / 122人`;
         
-        // --- 產生統計表 (雖然預設隱藏，但數據要算好) ---
-        const statsBody = document.getElementById('statsBody'); statsBody.innerHTML = '';
-        // 這裡的邏輯比較單純，只為了算總數
-        const unitActual = unitExpect.map(u => ({ ...u, actual: 0 }));
-        // (略過詳細統計邏輯，因為重點在顯示優化)
+        // (略過詳細統計表計算，以簡化程式碼)
+        document.getElementById('statsBody').innerHTML = "<tr><td colspan='5' style='text-align:center; color:#999;'>統計資料運算已隱藏，僅計算總人數</td></tr>";
 
         const indexContainer = document.getElementById('indexContainer'); indexContainer.innerHTML = '';
         const displayOrder = ['主', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
@@ -377,61 +330,69 @@ CR驗船中心,2
             if (!tables[key]) return;
             const mapEl = document.getElementById('map-' + key);
             
-            // --- 核心顯示邏輯 ---
-            const labelCounts = {};
-            
+            // --- 邏輯 A：地圖圓圈 (極致合併) ---
+            const mapLabelCounts = {};
             tables[key].forEach(name => {
-                let matchedLabel = name; // 預設顯示原名
-                let isVIP = false;
-
-                // 1. 先掃描看是不是 VIP (group: undefined/false)
-                for (let uRef of unitExpect) {
-                    if (uRef.group) continue; // 跳過群組，只找VIP
-                    const keys = uRef.keys || [uRef.name];
-                    if (keys.some(k => name.includes(k))) {
-                        // 找到 VIP 關鍵字 (如: 科長、理事長)
-                        matchedLabel = name; // VIP 保留全名 (如 港政科科長)
-                        isVIP = true;
-                        
-                        // 特殊修正
-                        if (uRef.name === "前主祕余建勳(含夫人)") {
-                            if (name.includes("夫人")) matchedLabel = "前主秘夫人";
-                            else matchedLabel = "前主祕";
-                        }
-                        if (uRef.name === "隨行秘書") matchedLabel = "局長隨行秘書";
-                        break;
-                    }
+                let mapLabel = name;
+                // 1. 如果包含「葉協隆」，顯示「局長」 (特殊處理)
+                // 2. 如果包含「單位名稱」，一律合併成單位 (例如：監理科科長 -> 監理科)
+                let merged = false;
+                
+                // 特殊 VIP 保留全名 (局長/主任/隨行秘書/前主秘)
+                if (name.includes("葉協隆") || name.includes("隨行") || name.includes("張博彥") || name.includes("前主秘")) {
+                    mapLabel = name;
+                    if(name.includes("隨行")) mapLabel = "局長隨行秘書";
+                    merged = true; // 標記已處理
                 }
 
-                // 2. 如果不是 VIP，才嘗試歸類為群組 (小樓樓)
-                if (!isVIP) {
-                    for (let uRef of unitExpect) {
-                        if (!uRef.group) continue; // 只找群組
-                        const keys = uRef.keys || [uRef.name];
-                        if (keys.some(k => name.includes(k))) {
-                            matchedLabel = uRef.name; // 合併為單位名稱 (如 航安科)
+                if (!merged) {
+                    for (let unit of unitKeywords) {
+                        if (name.includes(unit)) {
+                            mapLabel = unit; // 將「監理科科長」縮寫為「監理科」
                             break;
                         }
                     }
                 }
-
-                labelCounts[matchedLabel] = (labelCounts[matchedLabel] || 0) + 1;
+                mapLabelCounts[mapLabel] = (mapLabelCounts[mapLabel] || 0) + 1;
             });
 
-            // 產生顯示字串
-            const displayLabels = Object.entries(labelCounts).map(([label, count]) => {
-                if (count > 1) return `${label} x${count}`;
-                return label;
+            // --- 邏輯 B：詳細清單 (保留職稱) ---
+            const listLabelCounts = {};
+            tables[key].forEach(name => {
+                let listLabel = name;
+                
+                // 1. 檢查是否有「重要職稱」
+                const hasTitle = titlesToKeep.some(t => name.includes(t));
+                
+                if (hasTitle) {
+                    // 有職稱 -> 絕對保留原名 (例如：監理科科長 -> 監理科科長)
+                    listLabel = name;
+                    // 微調顯示
+                    if(name.includes("隨行")) listLabel = "局長隨行秘書";
+                } else {
+                    // 沒職稱 -> 嘗試找單位合併 (例如：監理科 -> 監理科)
+                    for (let unit of unitKeywords) {
+                        if (name.includes(unit)) {
+                            listLabel = unit;
+                            break;
+                        }
+                    }
+                }
+                listLabelCounts[listLabel] = (listLabelCounts[listLabel] || 0) + 1;
             });
 
-            // 1. 更新地圖上的圓圈
+            // --- 渲染 HTML ---
+            
+            // 1. 圓圈 (Map)
             if (mapEl) {
-                mapEl.innerHTML = displayLabels.join('<br>');
+                const mapHtml = Object.entries(mapLabelCounts).map(([l, c]) => c > 1 ? `${l} x${c}` : l).join('<br>');
+                mapEl.innerHTML = mapHtml;
             }
 
-            // 2. 更新下方的詳細清單
+            // 2. 清單 (List)
+            const listHtml = Object.entries(listLabelCounts).map(([l, c]) => c > 1 ? `${l} x${c}` : l).join('、');
             const title = key === '主' ? '主桌' : `第 ${key} 桌`;
-            indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${displayLabels.join('、')}<br><hr style="border:0.5px solid #eee;">`;
+            indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${listHtml}<br><hr style="border:0.5px solid #eee;">`;
         });
     }
     updateAll();
