@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <title>南部航務中心115年員工聯誼暨CIQS茶會人員配置圖</title>
     <style>
-        body { font-family: "Microsoft JhengHei", sans-serif; background: #f5f5f5; display: flex; padding: 20px; gap: 20px; margin: 0; height: 100vh; overflow: hidden; }
+        /* --- 全局背景設定 (深色背景襯托海報) --- */
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #333; display: flex; padding: 20px; gap: 20px; margin: 0; height: 100vh; overflow: hidden; }
         
+        /* 左側管理面板 */
         .admin-panel { 
             width: 340px; background: #fff; padding: 20px; border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 95vh; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); height: 95vh; 
             display: flex; flex-direction: column; transition: transform 0.3s ease;
             position: relative; z-index: 10;
         }
@@ -21,20 +23,57 @@
         .options-box { margin-top: 15px; font-weight: bold; color: #333; font-size: 14px; border-top: 1px solid #eee; padding-top: 10px; }
         .options-box label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
+        /* 右側圖表區 */
         .chart-container { flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 30px; overflow-y: auto; height: 95vh; width: 100%; }
-        .canvas { width: 950px; background: white; border: 2px solid #333; padding: 40px; position: relative; flex-shrink: 0; margin-top: 20px;}
+        
+        /* --- 核心畫布 (海報本體) --- */
+        .canvas { 
+            width: 950px; 
+            /* 方案 A: 國宴尊榮風 (米白漸層) */
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border: 1px solid #ccc; padding: 40px; position: relative; flex-shrink: 0; margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); /* 讓海報浮起來 */
+        }
+
         .top-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
-        .restroom-box { border: 1px solid #000; padding: 8px; width: 60px; text-align: center; font-weight: bold; font-size: 13px; }
-        .stage-box { background: red; color: white; padding: 15px 90px; font-weight: bold; border: 1px solid #000; font-size: 22px; }
+        .restroom-box { border: 2px solid #555; padding: 8px; width: 60px; text-align: center; font-weight: bold; font-size: 13px; color: #555; }
+        .stage-box { background: #d32f2f; color: white; padding: 15px 90px; font-weight: 900; border: 2px solid #b71c1c; font-size: 24px; letter-spacing: 5px; box-shadow: 0 4px 0 #922b21; border-radius: 4px; }
         .main-layout { display: flex; min-height: 750px; position: relative; }
         .left-facilities { width: 80px; display: flex; flex-direction: column; justify-content: center; }
-        .elevator-box { border: 1px solid #000; padding: 15px 5px; text-align: center; background: #eee; font-weight: bold; font-size: 13px; }
-        .guide-wall { width: 8px; background: #000; margin: 0 35px; border-radius: 0 0 4px 4px; height: 680px; }
+        .elevator-box { border: 2px solid #555; padding: 15px 5px; text-align: center; background: #eee; font-weight: bold; font-size: 13px; color: #333; }
+        .guide-wall { width: 8px; background: #444; margin: 0 35px; border-radius: 0 0 4px 4px; height: 680px; }
         .seating-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         
-        .main-table-circle { width: 180px; height: 180px; border-radius: 50%; border: 3px solid #1976d2; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; margin-bottom: 40px; text-align: center; color: #0d47a1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        /* --- 主桌新佈局 (三欄式) --- */
+        .main-vip-wrapper {
+            display: flex; justify-content: center; align-items: center; gap: 20px;
+            width: 100%; margin-bottom: 40px;
+        }
+        .main-table-circle { 
+            width: 160px; height: 160px; border-radius: 50%; 
+            border: 4px solid #1565c0; background: #e3f2fd; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; font-size: 24px; text-align: center; color: #0d47a1; 
+            box-shadow: 0 8px 15px rgba(21, 101, 192, 0.2); 
+            z-index: 2;
+        }
+        .vip-list {
+            font-size: 15px; font-weight: bold; line-height: 1.8; color: #333;
+            min-width: 140px;
+        }
+        .vip-list.left { text-align: right; border-right: 3px solid #ddd; padding-right: 15px; }
+        .vip-list.right { text-align: left; border-left: 3px solid #ddd; padding-left: 15px; }
+
+        /* 一般圓桌 */
         .guest-grid { display: grid; grid-template-columns: repeat(4, 180px); gap: 15px 25px; align-items: center; }
-        .table-circle { width: 140px; height: 140px; border-radius: 50%; border: 2px solid #666; background: radial-gradient(circle, #ffffff, #f0f4f8); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .table-circle { 
+            width: 140px; height: 140px; border-radius: 50%; 
+            border: 2px solid #888; 
+            background: rgba(255,255,255,0.8); /* 半透明白，透出底色 */
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; padding: 5px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+        }
         .table-circle b { font-size: 18px; color: #000; border-bottom: 2px solid #ccc; width: 85%; margin-bottom: 6px; font-weight: 900; }
         .unit-list { font-size: 13px; line-height: 1.3; color: #222; font-weight: bold; }
         
@@ -43,7 +82,7 @@
         .bottom-row { margin-top: 40px; display: flex; justify-content: center; width: 100%; }
         .reception-group { display: flex; border: 2px solid #000; background: #fff; }
         .reception-box { border: 1px solid #000; padding: 15px 70px; font-weight: 900; font-size: 18px; }
-        .footer { margin-top: 40px; text-align: center; border-top: 3px solid #000; padding-top: 25px; width: 100%; }
+        .footer { margin-top: 40px; text-align: center; border-top: 3px solid #555; padding-top: 25px; width: 100%; }
         
         .summary-panel { width: 950px; background: white; border: 1px solid #333; padding: 35px; flex-shrink: 0; margin-bottom: 50px; }
         .summary-grid { display: grid; grid-template-columns: 1fr; gap: 40px; } 
@@ -69,9 +108,10 @@
                 margin: 0 auto !important; padding: 10px !important;
                 display: flex; flex-direction: column; justify-content: space-between; align-items: center;
                 transform: none !important; zoom: 1.45; 
+                background: white !important; /* 列印時通常不印底色以省墨水，若要印底色請在列印設定勾選背景圖形 */
             }
             .top-row, .main-layout, .bottom-row, .footer { width: 100%; max-width: 1000px; }
-            .main-table-circle { margin-bottom: 20px; }
+            .main-vip-wrapper { margin-bottom: 20px; }
             .bottom-row { margin-top: 20px; }
             .footer { margin-top: 20px; padding-top: 15px; }
         }
@@ -87,17 +127,15 @@
     <textarea id="dataInput" oninput="updateAll()" placeholder="格式：姓名,桌號">局長葉協隆,主
 主任張博彥,主
 前主秘余建勳,主
-港警總隊總隊長,主
-港務消防副大隊長,主
-CDC,主
-國際輪船公會理事長,主
-倉庫公會理事長,主
-裝卸公會理事長,主
-理貨公會理事長,主
-船代公會理事長,主
-引水人公會主任,主
-
-
+國際輪船公會理事長吳岳峯,主
+倉庫公會理事長駱啟明,主
+裝卸公會理事長黃德成,主
+理貨公會理事長管長虹,主
+船代公會理事長顏銘傳,主
+引水人公會主任陳策勤,主
+CDC長官,主
+港警總隊總隊長廖國政,主
+港務消防副大隊長戴國仰,主
 
 副主任,4
 港政科科長,4
@@ -239,7 +277,13 @@ CR驗船中心,2
             <div class="left-facilities"><div class="elevator-box">⇅ 電梯</div></div>
             <div class="guide-wall"></div>
             <div class="seating-area">
-                <div class="main-table-circle">主桌<br>長官貴賓</div>
+                
+                <div class="main-vip-wrapper">
+                    <div class="vip-list left" id="vipListLeft"></div>
+                    <div class="main-table-circle">主 桌<br><span style="font-size:16px; margin-top:5px;">長官貴賓</span></div>
+                    <div class="vip-list right" id="vipListRight"></div>
+                </div>
+
                 <div class="guest-grid">
                     <div class="table-circle"><b>第 1 桌</b><div class="unit-list" id="map-1"></div></div>
                     <div class="table-circle"><b>第 2 桌</b><div class="unit-list" id="map-2"></div></div>
@@ -259,9 +303,9 @@ CR驗船中心,2
         </div>
         <div class="bottom-row"><div class="reception-group"><div class="reception-box">接 待 處</div><div class="reception-box">接 待 處</div></div></div>
         <div class="footer">
-            <div style="font-size:18px; font-weight:bold;">交通部航港局南部航務中心</div>
-            <h2 style="margin:8px 0;">115年員工聯誼活動暨CIQS茶會</h2>
-            <p>115.1.23 (五) 18:00 入場 / 18:30 開始 | 地點：高雄翰品酒店 4樓兆慶廳 (大仁路43號)</p>
+            <div style="font-size:18px; font-weight:bold; color:#333;">交通部航港局南部航務中心</div>
+            <h2 style="margin:8px 0; color:#000;">115年員工聯誼活動暨CIQS茶會</h2>
+            <p style="color:#555;">115.1.23 (五) 18:00 入場 / 18:30 開始 | 地點：高雄翰品酒店 4樓兆慶廳 (大仁路43號)</p>
         </div>
     </div>
 
@@ -291,11 +335,7 @@ CR驗船中心,2
         else { panel.classList.add('collapsed'); btn.classList.remove('hidden'); }
     }
 
-    // 1. 定義「純單位」關鍵字 (用來在 Map 中合併，或 List 中沒職稱時合併)
-    const unitKeywords = ["航安科", "海技科", "港政科", "監理科", "安平航港科", "安平科", "裝卸公會", "船代公會", "CDC", "國際輪船公會", "港勤公司", "驗船中心", "政風", "消防", "倉庫", "理貨", "引水人"];
-
-    // 2. 定義「必須保留的職稱」 (List 中若出現這些字，絕對不合併)
-    // 3. 注意：這裡加入了 "素" 作為關鍵字，確保 List 中會保留全名
+    const unitKeywords = ["航安科", "海技科", "港政科", "監理科", "安平航港科", "安平科", "裝卸公會", "船代公會", "CDC", "國際輪船", "港勤", "驗船中心", "政風", "消防", "倉庫", "理貨", "引水人", "港警"];
     const titlesToKeep = ["局長", "隨行秘書", "主任", "副主任", "技正", "專門委員", "專委", "主秘", "夫人", "科長", "視察", "專員", "理事長", "總幹事", "處長", "大隊長", "隊長", "素", "素食"];
 
     function updateAll() {
@@ -331,50 +371,57 @@ CR驗船中心,2
             if (!tables[key]) return;
             const mapEl = document.getElementById('map-' + key);
             
-            // --- 邏輯 A：地圖圓圈 (極致合併 + 素食分離) ---
-            const mapLabelCounts = {};
-            tables[key].forEach(name => {
-                let mapLabel = name;
-                let merged = false;
-                
-                // 特殊 VIP 保留全名
-                if (name.includes("葉協隆") || name.includes("隨行") || name.includes("張博彥") || name.includes("前主秘")) {
-                    mapLabel = name;
-                    if(name.includes("隨行")) mapLabel = "局長隨行秘書";
-                    merged = true; 
-                } 
-                // 【關鍵修改】：檢查是否為素食 -> 絕對不合併，並標記 merged=true 避免被下方單位合併吃掉
-                else if (name.includes("素")) {
-                    mapLabel = name; // 保留原名 (例如 航安科(素食))
-                    merged = true;   // 阻止進入下方的單位合併
-                }
+            // --- 特殊處理：主桌 (分左右) ---
+            if (key === '主') {
+                const vipNames = tables[key]; // 主桌名單
+                const half = Math.ceil(vipNames.length / 2);
+                const leftNames = vipNames.slice(0, half);
+                const rightNames = vipNames.slice(half);
 
-                if (!merged) {
-                    // 一般合併邏輯 (包含科長、專員等，都吃進單位裡)
-                    for (let unit of unitKeywords) {
-                        if (name.includes(unit)) {
-                            mapLabel = unit; 
-                            break;
+                document.getElementById('vipListLeft').innerHTML = leftNames.join('<br>');
+                document.getElementById('vipListRight').innerHTML = rightNames.join('<br>');
+            } else {
+                // --- 邏輯 A：一般圓圈 (極致合併 + 素食分離) ---
+                const mapLabelCounts = {};
+                tables[key].forEach(name => {
+                    let mapLabel = name;
+                    let merged = false;
+                    
+                    if (name.includes("葉協隆") || name.includes("隨行") || name.includes("張博彥") || name.includes("前主秘")) {
+                        mapLabel = name;
+                        if(name.includes("隨行")) mapLabel = "局長隨行秘書";
+                        merged = true; 
+                    } else if (name.includes("素")) {
+                        mapLabel = name; 
+                        merged = true;   
+                    }
+
+                    if (!merged) {
+                        for (let unit of unitKeywords) {
+                            if (name.includes(unit)) {
+                                mapLabel = unit; 
+                                break;
+                            }
                         }
                     }
-                }
-                mapLabelCounts[mapLabel] = (mapLabelCounts[mapLabel] || 0) + 1;
-            });
+                    mapLabelCounts[mapLabel] = (mapLabelCounts[mapLabel] || 0) + 1;
+                });
 
-            // --- 邏輯 B：詳細清單 (保留職稱 + 保留素食) ---
+                if (mapEl) {
+                    const mapHtml = Object.entries(mapLabelCounts).map(([l, c]) => c > 1 ? `${l} x${c}` : l).join('<br>');
+                    mapEl.innerHTML = mapHtml;
+                }
+            }
+
+            // --- 邏輯 B：詳細清單 (全部保留職稱) ---
             const listLabelCounts = {};
             tables[key].forEach(name => {
                 let listLabel = name;
-                
-                // 檢查是否含有重要職稱 OR 素食
                 const hasTitle = titlesToKeep.some(t => name.includes(t));
-                
                 if (hasTitle) {
-                    // 有職稱或素食 -> 保留全名
                     listLabel = name;
                     if(name.includes("隨行")) listLabel = "局長隨行秘書";
                 } else {
-                    // 沒職稱 -> 嘗試找單位合併
                     for (let unit of unitKeywords) {
                         if (name.includes(unit)) {
                             listLabel = unit;
@@ -385,15 +432,6 @@ CR驗船中心,2
                 listLabelCounts[listLabel] = (listLabelCounts[listLabel] || 0) + 1;
             });
 
-            // --- 渲染 HTML ---
-            
-            // 1. 圓圈 (Map)
-            if (mapEl) {
-                const mapHtml = Object.entries(mapLabelCounts).map(([l, c]) => c > 1 ? `${l} x${c}` : l).join('<br>');
-                mapEl.innerHTML = mapHtml;
-            }
-
-            // 2. 清單 (List)
             const listHtml = Object.entries(listLabelCounts).map(([l, c]) => c > 1 ? `${l} x${c}` : l).join('、');
             const title = key === '主' ? '主桌' : `第 ${key} 桌`;
             indexContainer.innerHTML += `<b>${title} (${tables[key].length}人):</b> ${listHtml}<br><hr style="border:0.5px solid #eee;">`;
