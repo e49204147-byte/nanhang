@@ -150,7 +150,8 @@
         <span class="nav-label">─ 內部單位 ─</span>
         <div class="nav-btns">
             <button class="nav-btn" onclick="quickFilter('^局長|^隨行', '局長室')">局長室</button>
-            <button class="nav-btn" onclick="quickFilter('^主任|^副主任', '主任/副主任')">主任/副主任</button>
+            <button class="nav-btn" onclick="quickFilter('^主任|副主任', '主任/副主任')">主任/副主任</button>
+            <button class="nav-btn" onclick="quickFilter('前主秘|余建勳', '前主秘(含夫人)')">前主秘(含夫人)</button>
             <button class="nav-btn" onclick="quickFilter('簡任技正|專門委員', '簡技/專委')">簡技/專委</button>
             <button class="nav-btn" onclick="quickFilter('科長', '科長')">科長</button>
             <button class="nav-btn" onclick="quickFilter('政風', '政風室')">政風室</button>
@@ -216,6 +217,7 @@
 </div>
 
 <textarea id="database" style="display:none;">
+局長葉協隆,主
 主任張博彥,主
 前主秘余建勳,主
 國際輪船公會理事長,主
@@ -228,7 +230,7 @@ CDC,主
 港警總隊總隊長,主
 港務消防副大隊長,主
 
-許副主任,4
+副主任,4
 港政科科長,4
 港政科視察,4
 港政科專員,4
@@ -349,13 +351,12 @@ CR驗船中心,2
 港政科,10
 港政科,10
 安平航港科,10
-安平航港科,10
-</textarea>
+安平航港科,10</textarea>
 
 <script>
-    // --- 閒置檢測與自動重置功能 ---
+    // --- 閒置 30 秒自動重置 ---
     let idleTimer;
-    const idleLimit = 30000; // 30秒無動作則重置 (毫秒)
+    const idleLimit = 30000; // 30秒
 
     function resetTimer() {
         clearTimeout(idleTimer);
@@ -363,25 +364,17 @@ CR驗船中心,2
     }
 
     function goHome() {
-        // 1. 捲動回最上方
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // 2. 清空搜尋框
         const input = document.getElementById('searchInput');
         if(input) input.value = '';
-
-        // 3. 重置搜尋結果 (呼叫 smartSearch 會自動清空畫面)
         smartSearch();
-
-        // 4. 移除所有按鈕的 active 狀態
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     }
 
-    // 監聽各種使用者動作來重置計時器
     window.onload = resetTimer;
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
-    document.ontouchstart = resetTimer; // 針對觸控螢幕
+    document.ontouchstart = resetTimer; 
     document.onclick = resetTimer;
     document.onscroll = resetTimer;
     // ---------------------------
@@ -401,6 +394,12 @@ CR驗船中心,2
             else btn.classList.remove('active');
         });
     }
+
+    // 1. 定義「純單位」關鍵字 (用來在 Map 中合併，或 List 中沒職稱時合併)
+    const unitKeywords = ["航安科", "海技科", "港政科", "監理科", "安平航港科", "安平科", "裝卸公會", "船代公會", "CDC", "國際輪船", "港勤", "驗船中心", "政風", "消防", "倉庫", "理貨", "引水人", "港警"];
+
+    // 2. 定義「必須保留的職稱」 (List 中若出現這些字，絕對不合併)
+    const titlesToKeep = ["局長", "隨行秘書", "主任", "副主任", "技正", "專門委員", "專委", "主秘", "夫人", "科長", "視察", "專員", "理事長", "總幹事", "處長", "大隊長", "隊長", "素", "素食"];
 
     function smartSearch() {
         const input = document.getElementById('searchInput').value.trim();
@@ -458,13 +457,30 @@ CR驗船中心,2
             const people = matches[table];
             const isVip = table === '主';
             
-            const countMap = {};
-            people.forEach(p => {
-                countMap[p] = (countMap[p] || 0) + 1;
+            // --- 智慧合併邏輯 (同步 index.html 的邏輯) ---
+            const listLabelCounts = {};
+            people.forEach(name => {
+                let listLabel = name;
+                
+                // 檢查是否含有重要職稱 OR 素食
+                const hasTitle = titlesToKeep.some(t => name.includes(t));
+                
+                if (hasTitle) {
+                    listLabel = name;
+                    if(name.includes("隨行")) listLabel = "局長隨行秘書";
+                } else {
+                    for (let unit of unitKeywords) {
+                        if (name.includes(unit)) {
+                            listLabel = unit;
+                            break;
+                        }
+                    }
+                }
+                listLabelCounts[listLabel] = (listLabelCounts[listLabel] || 0) + 1;
             });
 
             let peopleHtml = '';
-            for (let [name, count] of Object.entries(countMap)) {
+            for (let [name, count] of Object.entries(listLabelCounts)) {
                 let displayName = name;
                 queries.forEach(q => {
                     const cleanQ = q.replace('^', '');
