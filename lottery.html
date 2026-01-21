@@ -14,7 +14,7 @@
 
         /* --- 2. 精簡側邊欄 (Fixed) --- */
         .sidebar { 
-            width: 280px; /* 稍微加寬以容納長名稱 */
+            width: 280px; 
             background: rgba(0, 0, 0, 0.75); 
             border-right: 1px solid rgba(255, 215, 0, 0.3);
             padding: 15px; 
@@ -61,7 +61,7 @@
         .prize-scroll-area {
             flex-grow: 1; overflow-y: auto; padding-right: 5px;
             display: flex; flex-direction: column; gap: 6px;
-            max-height: 40vh; /* 限制高度 */
+            max-height: 40vh; 
         }
         
         /* 獎項按鈕樣式 */
@@ -93,6 +93,20 @@
         .group-header {
             font-size: 11px; color: #888; margin: 8px 0 4px 0; border-bottom: 1px solid #444; padding-bottom: 2px;
         }
+
+        /* 解鎖加碼按鈕 (預設隱藏) */
+        .unlock-bonus-btn {
+            width: 100%; padding: 10px; margin-top: 10px;
+            background: linear-gradient(to right, #f1c40f, #f39c12);
+            color: #000; font-weight: 900; border: none; border-radius: 5px;
+            cursor: pointer; animation: pulse 1.5s infinite;
+            display: none; /* JS 控制顯示 */
+        }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+
+        /* 加碼區容器 (動畫用) */
+        .bonus-section { display: none; animation: slideDown 0.5s ease-out; }
+        .bonus-section.show { display: block; }
 
         /* 執行區 */
         .action-area { display: flex; flex-direction: column; gap: 8px; margin-top: auto; border-top: 1px dashed #555; padding-top: 10px; }
@@ -195,6 +209,7 @@
         .close-btn:hover { border-color:#fff; color: #fff; }
 
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+        @keyframes slideDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
         @keyframes slideUp { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
         @keyframes popIn { from {transform:scale(0);} to {transform:scale(1);} }
         @keyframes zoomIn { from {transform:scale(0.95); opacity:0;} to {transform:scale(1); opacity:1;} }
@@ -265,6 +280,7 @@
     let allParticipants = [];
     let winners = [];
     let isCheckMode = false;
+    let isBonusUnlocked = false; // 加碼解鎖狀態
 
     // 1. 定義標準獎項 (84人)
     const STANDARD_PRIZES = [
@@ -332,6 +348,7 @@
         // 重置所有計數
         for(let key in currentCounts) currentCounts[key] = 0;
         
+        isBonusUnlocked = false; // 重置加碼狀態
         updateStats(); renderPrizeButtons(); updateWinnerBoard();
         
         if(!isCheckMode) toggleViewMode();
@@ -353,6 +370,7 @@
         if(confirm("確定清空？")) {
             allParticipants = []; winners = [];
             for(let key in currentCounts) currentCounts[key] = 0;
+            isBonusUnlocked = false;
             updateStats(); renderPrizeButtons(); updateWinnerBoard(); renderCheckWall();
         }
     }
@@ -361,12 +379,11 @@
         document.getElementById('totalDisplay').innerText = allParticipants.length;
     }
 
-    // 渲染按鈕
+    // 渲染按鈕 (核心邏輯：隱藏/顯示加碼區)
     function renderPrizeButtons() {
         const container = document.getElementById('prizeButtonList'); 
         container.innerHTML = '';
 
-        // Helper function
         const createBtn = (p) => {
             const remain = p.limit - currentCounts[p.name];
             const btn = document.createElement('div');
@@ -383,23 +400,60 @@
         container.appendChild(h1);
         STANDARD_PRIZES.forEach(p => container.appendChild(createBtn(p)));
 
-        // 2. 加碼區
-        const h2 = document.createElement('div');
-        h2.className = 'group-header'; h2.innerText = '💖 長官加碼區';
-        container.appendChild(h2);
-        BONUS_PRIZES.forEach(p => container.appendChild(createBtn(p)));
+        // 判斷局長獎是否抽完
+        const directorPrize = STANDARD_PRIZES[STANDARD_PRIZES.length - 1];
+        const isDirectorDone = currentCounts[directorPrize.name] >= directorPrize.limit;
 
-        // 3. 手動隨機
-        const h3 = document.createElement('div');
-        h3.className = 'group-header'; h3.innerText = '🔥 現場隨機';
-        container.appendChild(h3);
+        // 如果局長獎抽完 且 還沒解鎖 -> 顯示解鎖按鈕
+        if (isDirectorDone && !isBonusUnlocked) {
+            const unlockBtn = document.createElement('button');
+            unlockBtn.className = 'unlock-bonus-btn';
+            unlockBtn.innerHTML = '✨ 啟動長官加碼環節 ✨';
+            unlockBtn.style.display = 'block';
+            
+            // 【核心修正】：按下時重置所有中獎者狀態
+            unlockBtn.onclick = () => {
+                // 跳出確認視窗，避免誤觸
+                if(confirm("【即將進入加碼環節】\n\n系統將自動把前 84 位中獎者「放回抽獎箱」，\n讓全體同仁皆有機會參與加碼獎。\n\n確定執行嗎？")) {
+                    // 執行重置：把所有人的 isWinner 改回 false
+                    allParticipants.forEach(p => p.isWinner = false);
+                    
+                    isBonusUnlocked = true;
+                    renderPrizeButtons(); // 重新渲染按鈕
+                    renderCheckWall(); // 更新確認牆顏色 (會變回原本的顏色)
+                    
+                    alert("✅ 已重置中獎狀態！\n現在所有人 (含標準獎得主) 均有資格參加加碼！");
+                }
+            };
+            container.appendChild(unlockBtn);
+        }
 
-        const manualBtn = document.createElement('div');
-        manualBtn.className = `preset-btn ${isManualExtra ? 'bonus-active' : ''}`;
-        manualBtn.style.color = '#f39c12';
-        manualBtn.onclick = () => selectManual();
-        manualBtn.innerHTML = `<span>隨機加碼</span><span class="badge" style="background:#f39c12; color:#000;">∞</span>`;
-        container.appendChild(manualBtn);
+        // 如果已解鎖 -> 顯示加碼區 & 手動隨機區
+        if (isBonusUnlocked) {
+            const bonusContainer = document.createElement('div');
+            bonusContainer.className = 'bonus-section show';
+
+            // 2. 加碼區
+            const h2 = document.createElement('div');
+            h2.className = 'group-header'; h2.innerText = '💖 長官加碼區';
+            h2.style.marginTop = '15px';
+            bonusContainer.appendChild(h2);
+            BONUS_PRIZES.forEach(p => bonusContainer.appendChild(createBtn(p)));
+
+            // 3. 手動隨機
+            const h3 = document.createElement('div');
+            h3.className = 'group-header'; h3.innerText = '🔥 現場隨機';
+            bonusContainer.appendChild(h3);
+
+            const manualBtn = document.createElement('div');
+            manualBtn.className = `preset-btn ${isManualExtra ? 'bonus-active' : ''}`;
+            manualBtn.style.color = '#f39c12';
+            manualBtn.onclick = () => selectManual();
+            manualBtn.innerHTML = `<span>隨機加碼</span><span class="badge" style="background:#f39c12; color:#000;">∞</span>`;
+            bonusContainer.appendChild(manualBtn);
+
+            container.appendChild(bonusContainer);
+        }
     }
 
     function selectPrize(name, isBonus) {
@@ -414,11 +468,9 @@
 
         nameIn.value = name; nameIn.readOnly = true;
         
-        // 取得限制
         const limitObj = [...STANDARD_PRIZES, ...BONUS_PRIZES].find(p => p.name === name);
         const remain = limitObj.limit - currentCounts[name];
         
-        // 普獎建議分批，其他梭哈
         countIn.value = name.includes('普獎') ? Math.min(10, remain) : remain;
         
         btn.disabled = false; btn.innerText = `🎰 抽出 ${name}`;
@@ -448,10 +500,9 @@
         const awardName = document.getElementById('awardName').value.trim();
         const count = parseInt(document.getElementById('drawCount').value);
         
-        // 1. 基本檢查
         if (!awardName || count <= 0) return;
 
-        // 2. 預算檢查 (僅針對非手動模式)
+        // 預算檢查
         if (!isManualExtra && currentMode) {
             const limitObj = [...STANDARD_PRIZES, ...BONUS_PRIZES].find(p => p.name === currentMode);
             if (limitObj) {
@@ -461,17 +512,16 @@
             }
         }
 
-        // 3. 人數檢查 (特別邏輯：加碼沒人時可復活)
+        // 人數檢查
         let remainList = allParticipants.filter(p => !p.isWinner);
         
         if (remainList.length < count) {
-            // 如果是加碼模式 (包含預定加碼 或 手動加碼)
             const isBonusMode = isManualExtra || (currentMode && [...BONUS_PRIZES].some(p => p.name === currentMode));
             
             if (isBonusMode) {
                 const confirmReuse = confirm(`⚠️ 剩餘未中獎人數 (${remainList.length}人) 不足！\n\n是否要從「全體名單」中抽出此加碼獎？\n(允許重複中獎)`);
                 if (confirmReuse) {
-                    remainList = [...allParticipants]; // 使用全體名單
+                    remainList = [...allParticipants]; 
                 } else {
                     return;
                 }
@@ -509,8 +559,6 @@
             const rIdx = Math.floor(Math.random() * remainList.length);
             const winner = remainList[rIdx];
             
-            // 標記 (如果是重複中獎模式，就不標記 isWinner 以免影響下一輪)
-            // 但標準流程還是要標記
             const gIdx = allParticipants.findIndex(p => p.id === winner.id);
             if (!allParticipants[gIdx].isWinner) {
                 allParticipants[gIdx].isWinner = true;
