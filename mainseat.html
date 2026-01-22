@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主桌座位圖 (完美修正版)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap');
+
+        /* A4 橫向列印設定 */
+        @page {
+            size: A4 landscape;
+            margin: 5mm;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "Microsoft JhengHei", "Noto Serif TC", serif;
+            overflow: auto; /* 允許捲動 */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .canvas {
+            /* 加大畫布高度，確保上下不切邊 */
+            width: 1100px;
+            height: 950px; 
+            background: white;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin: auto;
+            flex-shrink: 0;
+        }
+
+        /* 舞台 - 固定在底部，留出足夠邊距 */
+        .stage {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 60px;
+            background-color: #8B0000 !important;
+            color: #FFD700 !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* 中間大圓桌 - 絕對置中 (50%)，並稍微往上提一點點避開舞台 */
+        .main-table {
+            position: absolute;
+            top: 48%; /* 設在 48% 讓上方空間稍微多一點點 */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px; /* 稍微縮小桌子直徑，讓比例更好 */
+            height: 380px;
+            background: #f3e5ab !important;
+            border: 8px solid #c5a059 !important;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            font-weight: 900;
+            color: #5d4037 !important;
+            letter-spacing: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .seat-container {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            width: 0;
+            height: 0;
+        }
+
+        /* 座位圓圈 */
+        .seat {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background: white !important;
+            border: 3px solid #333;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            cursor: text;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-weight: bold;
+            color: #333;
+            padding: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.3;
+        }
+
+        .seat div:first-child {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .seat div:last-child {
+            font-size: 18px;
+            color: #000;
+            font-weight: 900;
+        }
+
+        /* 座位半徑設定：改為 290px (原300px)，讓視覺更緊湊，避免撞到邊緣 */
+        /* 局長視角：局長(Pos-1)在下方 6點鐘方向 */
+        .pos-1 { transform: rotate(90deg) translate(290px) rotate(-90deg) translate(-50%, -50%); border-color: #8B0000 !important; border-width: 4px; }
+        .pos-2 { transform: rotate(120deg) translate(290px) rotate(-120deg) translate(-50%, -50%); }
+        .pos-3 { transform: rotate(150deg) translate(290px) rotate(-150deg) translate(-50%, -50%); }
+        .pos-4 { transform: rotate(180deg) translate(290px) rotate(-180deg) translate(-50%, -50%); }
+        .pos-5 { transform: rotate(210deg) translate(290px) rotate(-210deg) translate(-50%, -50%); }
+        .pos-6 { transform: rotate(240deg) translate(290px) rotate(-240deg) translate(-50%, -50%); }
+        .pos-7 { transform: rotate(270deg) translate(290px) rotate(-270deg) translate(-50%, -50%); } /* 正上方 */
+        .pos-8 { transform: rotate(300deg) translate(290px) rotate(-300deg) translate(-50%, -50%); }
+        .pos-9 { transform: rotate(330deg) translate(290px) rotate(-330deg) translate(-50%, -50%); }
+        .pos-10 { transform: rotate(0deg) translate(290px) rotate(0deg) translate(-50%, -50%); }
+        .pos-11 { transform: rotate(30deg) translate(290px) rotate(-30deg) translate(-50%, -50%); }
+        .pos-12 { transform: rotate(60deg) translate(290px) rotate(-60deg) translate(-50%, -50%); }
+
+        .hint {
+            position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white;
+            padding: 10px; border-radius: 5px; font-size: 14px; z-index: 999;
+        }
+
+        /* --- 列印優化 --- */
+        @media print {
+            body { 
+                background: white; 
+                display: block; 
+                margin: 0; padding: 0;
+                overflow: hidden;
+            }
+            .canvas {
+                box-shadow: none; 
+                border: none;
+                /* 自動縮放至 75%，確保 950px 高度也能完整印在 A4 */
+                transform: scale(0.75); 
+                transform-origin: top center; 
+                margin: 0 auto; 
+                left: 0;
+                top: 10px;
+            }
+            .hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hint">💡 修正完成：已加大空間並將座位置中，上方不再切邊。按 Ctrl+P 列印測試。</div>
+
+    <div class="canvas">
+        
+        <div class="main-table">主 桌</div>
+
+        <div class="seat-container">
+            <div class="seat pos-1" contenteditable="true">
+                <div>交通部航港局</div>
+                <div>葉協隆<br>局長</div>
+            </div>
+            <div class="seat pos-2" contenteditable="true">
+                <div>港警總隊</div>
+                <div>廖國政<br>總隊長</div>
+            </div>
+            <div class="seat pos-3" contenteditable="true">
+                <div>疾病管制署高屏管區管制中心</div>
+                <div>王任鑫<br>主任</div>
+            </div>
+            <div class="seat pos-4" contenteditable="true">
+                <div>港務消防大隊</div>
+                <div>戴國仰<br>副大隊長</div>
+            </div>
+            <div class="seat pos-5" contenteditable="true">
+                <div>驗船中心</div>
+                <div>高世榮<br>處長</div>
+            </div>
+            <div class="seat pos-6" contenteditable="true">
+                <div>輪船公會</div>
+                <div>吳岳峯<br>理事長</div>
+            </div>
+            <div class="seat pos-7" contenteditable="true">
+                <div>南部航務中心</div>
+                <div>張博彥<br>主任</div>
+            </div>
+            <div class="seat pos-8" contenteditable="true">
+                <div>前主秘</div>
+                <div>余建勳<br></div>
+            </div>
+            <div class="seat pos-9" contenteditable="true">
+                <div>裝卸公會</div>
+                <div>黃德成<br>理事長</div>
+            </div>
+            <div class="seat pos-10" contenteditable="true">
+                <div>引水人辦事處</div>
+                <div>陳策勤<br>主任</div>
+            </div>
+            <div class="seat pos-11" contenteditable="true">
+                <div>倉庫公會</div>
+                <div>駱啟明<br>理事長</div>
+            </div>
+            <div class="seat pos-12" contenteditable="true">
+                <div>船代公會</div>
+                <div>顏銘傳<br>理事長</div>
+            </div>
+        </div>
+
+        <div class="stage">舞 台</div>
+    </div>
+
+</body>
+</html>
