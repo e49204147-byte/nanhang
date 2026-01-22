@@ -2,233 +2,234 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>主桌座位圖 (局長視角圖)</title>
+    <title>南航主桌 - 簡潔雙視角版 (含單位)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap');
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* 控制區 */
+        .controls {
+            background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 95%; max-width: 1100px; margin-bottom: 20px; text-align: center;
+        }
+        .btn-group { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+        .btn {
+            padding: 15px 40px; font-size: 20px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-director { background: #e74c3c; color: white; } /* 局長紅 */
+        .btn-chief { background: #2c3e50; color: white; } /* 主任藍 */
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+        .btn.active { ring: 4px solid #ffd700; box-shadow: 0 0 15px rgba(0,0,0,0.3); }
 
-        /* A4 橫向列印設定 */
-        @page {
-            size: A4 landscape;
-            margin: 5mm;
+        /* 輸入區網格 (調整為顯示單位/職稱/姓名) */
+        .input-area { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: left; }
+        .input-group { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef; }
+        .input-group label { font-size: 13px; color: #555; font-weight: 900; display: block; margin-bottom: 5px; }
+        
+        .input-row { display: flex; gap: 5px; }
+        /* 單位輸入框 */
+        .input-unit { width: 45%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; color: #666; }
+        /* 職稱輸入框 */
+        .input-title { width: 25%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        /* 姓名輸入框 */
+        .input-name { width: 30%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; font-weight: bold; }
+
+        /* 桌子顯示區 */
+        .table-container {
+            position: relative; width: 750px; height: 750px;
+            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        body {
-            margin: 0;
-            padding: 20px;
-            background-color: #eee;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: "Microsoft JhengHei", "Noto Serif TC", serif;
-            overflow: auto; /* 允許捲動 */
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .canvas {
-            /* 加大畫布高度，確保上下不切邊 */
-            width: 1100px;
-            height: 950px; 
-            background: white;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            border-radius: 10px;
-            margin: auto;
-            flex-shrink: 0;
-        }
-
-        /* 舞台 - 固定在底部，留出足夠邊距 */
-        .stage {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 60px;
-            background-color: #8B0000 !important;
-            color: #FFD700 !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 10px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-
-        /* 中間大圓桌 - 絕對置中 (50%)，並稍微往上提一點點避開舞台 */
+        /* 圓桌 */
         .main-table {
-            position: absolute;
-            top: 48%; /* 設在 48% 讓上方空間稍微多一點點 */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 380px; /* 稍微縮小桌子直徑，讓比例更好 */
-            height: 380px;
-            background: #f3e5ab !important;
-            border: 8px solid #c5a059 !important;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 80px;
-            font-weight: 900;
-            color: #5d4037 !important;
-            letter-spacing: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 400px; height: 400px;
+            background: #e6cea0; border: 10px solid #a67c52; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1; transition: transform 0.8s ease;
         }
+        .table-text { font-size: 60px; font-weight: 900; color: #5d4037; opacity: 0.8; }
+        .current-view-text { font-size: 20px; color: #a67c52; font-weight: bold; margin-top: 10px; }
 
-        .seat-container {
-            position: absolute;
-            top: 48%;
-            left: 50%;
-            width: 0;
-            height: 0;
+        /* 座位容器 (負責旋轉) */
+        .seats-layer {
+            position: absolute; width: 100%; height: 100%;
+            transition: transform 0.8s ease; /* 平滑旋轉 */
         }
 
         /* 座位圓圈 */
         .seat {
-            position: absolute;
-            width: 110px;
-            height: 110px;
-            background: white !important;
-            border: 3px solid #333;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            transform: translate(-50%, -50%);
-            cursor: text;
-            transition: 0.2s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            font-weight: bold;
-            color: #333;
-            padding: 5px;
-            box-sizing: border-box;
-            font-size: 16px;
-            line-height: 1.3;
+            position: absolute; width: 130px; height: 130px;
+            background: white; border: 3px solid #555; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            left: 50%; top: 50%; margin-left: -65px; margin-top: -65px; /* 居中修正 */
+        }
+        
+        /* 座位內容 */
+        .seat-content {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: transform 0.8s ease;
         }
 
-        .seat div:first-child {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 2px;
-        }
+        /* 內容樣式 */
+        .unit { font-size: 11px; color: #555; font-weight: bold; line-height: 1.1; margin-bottom: 2px; width: 95%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .title { font-size: 12px; color: #888; font-weight: bold; line-height: 1.2; margin-bottom: 2px; }
+        .name { font-size: 18px; color: #000; font-weight: 900; }
 
-        .seat div:last-child {
-            font-size: 18px;
-            color: #000;
-            font-weight: 900;
-        }
+        /* 特別標示 */
+        .seat.target { border-color: #e74c3c; background: #fff0f0; transform: scale(1.1); z-index: 10; }
+        .seat.target .name { color: #e74c3c; }
 
-        /* 座位半徑設定：改為 290px (原300px)，讓視覺更緊湊，避免撞到邊緣 */
-        /* 局長視角：局長(Pos-1)在下方 6點鐘方向 */
-        .pos-1 { transform: rotate(90deg) translate(290px) rotate(-90deg) translate(-50%, -50%); border-color: #8B0000 !important; border-width: 4px; }
-        .pos-2 { transform: rotate(120deg) translate(290px) rotate(-120deg) translate(-50%, -50%); }
-        .pos-3 { transform: rotate(150deg) translate(290px) rotate(-150deg) translate(-50%, -50%); }
-        .pos-4 { transform: rotate(180deg) translate(290px) rotate(-180deg) translate(-50%, -50%); }
-        .pos-5 { transform: rotate(210deg) translate(290px) rotate(-210deg) translate(-50%, -50%); }
-        .pos-6 { transform: rotate(240deg) translate(290px) rotate(-240deg) translate(-50%, -50%); }
-        .pos-7 { transform: rotate(270deg) translate(290px) rotate(-270deg) translate(-50%, -50%); } /* 正上方 */
-        .pos-8 { transform: rotate(300deg) translate(290px) rotate(-300deg) translate(-50%, -50%); }
-        .pos-9 { transform: rotate(330deg) translate(290px) rotate(-330deg) translate(-50%, -50%); }
-        .pos-10 { transform: rotate(0deg) translate(290px) rotate(0deg) translate(-50%, -50%); }
-        .pos-11 { transform: rotate(30deg) translate(290px) rotate(-30deg) translate(-50%, -50%); }
-        .pos-12 { transform: rotate(60deg) translate(290px) rotate(-60deg) translate(-50%, -50%); }
-
-        .hint {
-            position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white;
-            padding: 10px; border-radius: 5px; font-size: 14px; z-index: 999;
-        }
-
-        /* --- 列印優化 --- */
         @media print {
-            body { 
-                background: white; 
-                display: block; 
-                margin: 0; padding: 0;
-                overflow: hidden;
-            }
-            .canvas {
-                box-shadow: none; 
-                border: none;
-                /* 自動縮放至 75%，確保 950px 高度也能完整印在 A4 */
-                transform: scale(0.75); 
-                transform-origin: top center; 
-                margin: 0 auto; 
-                left: 0;
-                top: 10px;
-            }
-            .hint { display: none; }
+            .controls { display: none; }
+            .table-container { box-shadow: none; border: 1px solid #eee; }
         }
     </style>
 </head>
 <body>
 
-    <div class="hint">💡 修正完成：已加大空間並將座位置中，上方不再切邊。按 Ctrl+P 列印測試。</div>
-
-    <div class="canvas">
+    <div class="controls">
+        <div class="btn-group">
+            <button class="btn btn-director" onclick="switchView(0, '葉協隆 局長')">⬇️ 局長視角</button>
+            <button class="btn btn-chief" onclick="switchView(6, '張博彥 主任')">⬇️ 主任視角</button>
+        </div>
         
-        <div class="main-table">主 桌</div>
-
-        <div class="seat-container">
-            <div class="seat pos-1" contenteditable="true">
-                <div>交通部航港局</div>
-                <div>葉協隆<br>局長</div>
+        <div class="input-area">
+            <div class="input-group"><label>1. 局長 (主人)</label>
+                <div class="input-row"><input class="input-unit" id="u0" value="交通部航港局"><input class="input-title" id="t0" value="局長"><input class="input-name" id="n0" value="葉協隆" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-2" contenteditable="true">
-                <div>港警總隊</div>
-                <div>廖國政<br>總隊長</div>
+            <div class="input-group"><label>2. 港警</label>
+                <div class="input-row"><input class="input-unit" id="u1" value="高雄港警總隊"><input class="input-title" id="t1" value="總隊長"><input class="input-name" id="n1" value="廖國政" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-3" contenteditable="true">
-                <div>疾病管制署高屏管區管制中心</div>
-                <div>王任鑫<br>主任</div>
+            <div class="input-group"><label>3. 疾管署</label>
+                <div class="input-row"><input class="input-unit" id="u2" value="疾管署高屏管制中心"><input class="input-title" id="t2" value="主任"><input class="input-name" id="n2" value="王任鑫" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-4" contenteditable="true">
-                <div>港務消防大隊</div>
-                <div>戴國仰<br>副大隊長</div>
+            <div class="input-group"><label>4. 消防</label>
+                <div class="input-row"><input class="input-unit" id="u3" value="港務消防大隊"><input class="input-title" id="t3" value="副大隊長"><input class="input-name" id="n3" value="戴國仰" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-5" contenteditable="true">
-                <div>驗船中心</div>
-                <div>高世榮<br>處長</div>
+            <div class="input-group"><label>5. 驗船</label>
+                <div class="input-row"><input class="input-unit" id="u4" value="驗船中心"><input class="input-title" id="t4" value="處長"><input class="input-name" id="n4" value="高世榮" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-6" contenteditable="true">
-                <div>輪船公會</div>
-                <div>吳岳峯<br>理事長</div>
+            <div class="input-group"><label>6. 輪船公會</label>
+                <div class="input-row"><input class="input-unit" id="u5" value="國際輪船公會"><input class="input-title" id="t5" value="理事長"><input class="input-name" id="n5" value="吳岳峯" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-7" contenteditable="true">
-                <div>南部航務中心</div>
-                <div>張博彥<br>主任</div>
+            <div class="input-group"><label>7. 主任 (對面)</label>
+                <div class="input-row"><input class="input-unit" id="u6" value="南部航務中心"><input class="input-title" id="t6" value="主任"><input class="input-name" id="n6" value="張博彥" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-8" contenteditable="true">
-                <div>前主秘</div>
-                <div>余建勳<br></div>
+            <div class="input-group"><label>8. 前主秘</label>
+                <div class="input-row"><input class="input-unit" id="u7" value="前主秘"><input class="input-title" id="t7" value=""><input class="input-name" id="n7" value="余建勳" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-9" contenteditable="true">
-                <div>裝卸公會</div>
-                <div>黃德成<br>理事長</div>
+            <div class="input-group"><label>9. 裝卸</label>
+                <div class="input-row"><input class="input-unit" id="u8" value="裝卸公會"><input class="input-title" id="t8" value="理事長"><input class="input-name" id="n8" value="黃德成" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-10" contenteditable="true">
-                <div>引水人辦事處</div>
-                <div>陳策勤<br>主任</div>
+            <div class="input-group"><label>10. 引水</label>
+                <div class="input-row"><input class="input-unit" id="u9" value="引水人辦事處"><input class="input-title" id="t9" value="主任"><input class="input-name" id="n9" value="陳策勤" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-11" contenteditable="true">
-                <div>倉庫公會</div>
-                <div>駱啟明<br>理事長</div>
+            <div class="input-group"><label>11. 倉庫</label>
+                <div class="input-row"><input class="input-unit" id="u10" value="倉庫公會"><input class="input-title" id="t10" value="理事長"><input class="input-name" id="n10" value="駱啟明" oninput="updateNames()"></div>
             </div>
-            <div class="seat pos-12" contenteditable="true">
-                <div>船代公會</div>
-                <div>顏銘傳<br>理事長</div>
+            <div class="input-group"><label>12. 船代</label>
+                <div class="input-row"><input class="input-unit" id="u11" value="船代公會"><input class="input-title" id="t11" value="理事長"><input class="input-name" id="n11" value="顏銘傳" oninput="updateNames()"></div>
             </div>
         </div>
-
-        <div class="stage">舞 台</div>
     </div>
+
+    <div class="table-container">
+        <div class="main-table">
+            <div class="table-text">主 桌</div>
+            <div class="current-view-text" id="viewLabel">目前：局長視角</div>
+        </div>
+
+        <div class="seats-layer" id="seatsLayer">
+            </div>
+    </div>
+
+<script>
+    // 半徑
+    const radius = 280; 
+    const seatsLayer = document.getElementById('seatsLayer');
+    const viewLabel = document.getElementById('viewLabel');
+
+    // 初始化
+    function init() {
+        // 產生 12 個座位 DOM
+        for (let i = 0; i < 12; i++) {
+            const seat = document.createElement('div');
+            seat.className = 'seat';
+            seat.id = `seat-${i}`;
+            
+            // 內部文字容器
+            const content = document.createElement('div');
+            content.className = 'seat-content';
+            content.id = `content-${i}`;
+            
+            // 初始 HTML
+            content.innerHTML = `<div class="unit">單位</div><div class="title">職稱</div><div class="name">姓名</div>`;
+            seat.appendChild(content);
+            seatsLayer.appendChild(seat);
+        }
+        updateNames(); // 填入名字
+        switchView(0, '葉協隆 局長'); // 預設局長視角
+    }
+
+    // 更新名字 (讀取 Unit/Title/Name)
+    function updateNames() {
+        for (let i = 0; i < 12; i++) {
+            const unit = document.getElementById(`u${i}`).value;
+            const title = document.getElementById(`t${i}`).value;
+            const name = document.getElementById(`n${i}`).value;
+            
+            const contentDiv = document.getElementById(`content-${i}`);
+            // 職稱若為空，微調顯示
+            const titleHtml = title ? `<div class="title">${title}</div>` : '';
+            
+            contentDiv.innerHTML = `<div class="unit">${unit}</div>${titleHtml}<div class="name">${name}</div>`;
+        }
+    }
+
+    // 切換視角核心邏輯
+    function switchView(targetIndex, labelText) {
+        viewLabel.innerText = "目前：" + labelText;
+
+        // 計算旋轉角度 (targetIndex 轉到 180度/正下方)
+        const rotation = 180 - (targetIndex * 30);
+        
+        // 1. 旋轉整個盤子
+        seatsLayer.style.transform = `rotate(${rotation}deg)`;
+
+        // 2. 重新計算每個座位的內部文字反轉，並定位座位
+        for (let i = 0; i < 12; i++) {
+            const seat = document.getElementById(`seat-${i}`);
+            const content = document.getElementById(`content-${i}`);
+            
+            // 每個座位在盤子上的固定角度 (0, 30, 60...)
+            const seatAngle = i * 30;
+            
+            // 定位：將座位推到半徑處
+            seat.style.transform = `rotate(${seatAngle}deg) translate(0, -${radius}px)`;
+            
+            // 文字反轉：必須抵消「盤子的旋轉」+「座位自身的角度」
+            content.style.transform = `rotate(${-(rotation + seatAngle)}deg)`;
+
+            // 標示當前視角的主角
+            if (i === targetIndex) {
+                seat.classList.add('target');
+            } else {
+                seat.classList.remove('target');
+            }
+        }
+    }
+
+    // 綁定輸入框更新事件
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', updateNames);
+    });
+
+    init();
+</script>
 
 </body>
 </html>
