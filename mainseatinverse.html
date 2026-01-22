@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主桌 12 人座位圖 (可直接編輯)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "Microsoft JhengHei", "Noto Serif TC", serif;
+        }
+
+        /* A4 橫向比例畫布 */
+        .canvas {
+            width: 1100px; /* 寬度 */
+            height: 800px; /* 高度 */
+            background: white;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden; /* 防止溢出 */
+        }
+
+        /* 舞台 */
+        .stage {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 60px;
+            background-color: #8B0000; /* 深紅舞台 */
+            color: #FFD700; /* 金字 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* 中間大圓桌 */
+        .main-table {
+            position: absolute;
+            top: 55%; /* 垂直置中微調 */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: #f3e5ab; /* 米黃色桌面 */
+            border: 8px solid #c5a059; /* 金棕色邊框 */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            font-weight: 900;
+            color: #5d4037;
+            letter-spacing: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* 座位容器 (用來旋轉定位) */
+        .seat-container {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            width: 0;
+            height: 0;
+        }
+
+        /* 座位圓圈 */
+        .seat {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform: translate(-50%, -50%); /* 修正中心點 */
+            cursor: text; /* 提示可輸入 */
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-weight: bold;
+            color: #333;
+            padding: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.3;
+        }
+
+        .seat:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+            z-index: 100;
+        }
+
+        .seat:focus-within {
+            border-color: #e74c3c;
+            background-color: #fff5f5;
+            outline: none;
+        }
+
+        /* 職稱樣式 (建議) */
+        .seat div:first-child {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        /* 姓名樣式 (建議) */
+        .seat div:last-child {
+            font-size: 18px;
+            color: #000;
+            font-weight: 900;
+        }
+
+        /* --- 12 個座位的精準定位 (半徑 300px) --- */
+        /* 12點鐘 (位置1) */
+        .pos-1 { transform: rotate(-90deg) translate(300px) rotate(90deg) translate(-50%, -50%); }
+        /* 1點鐘 (位置2) */
+        .pos-2 { transform: rotate(-60deg) translate(300px) rotate(60deg) translate(-50%, -50%); }
+        /* 2點鐘 (位置3) */
+        .pos-3 { transform: rotate(-30deg) translate(300px) rotate(30deg) translate(-50%, -50%); }
+        /* 3點鐘 (位置4) */
+        .pos-4 { transform: rotate(0deg) translate(300px) rotate(0deg) translate(-50%, -50%); }
+        /* 4點鐘 (位置5) */
+        .pos-5 { transform: rotate(30deg) translate(300px) rotate(-30deg) translate(-50%, -50%); }
+        /* 5點鐘 (位置6) */
+        .pos-6 { transform: rotate(60deg) translate(300px) rotate(-60deg) translate(-50%, -50%); }
+        /* 6點鐘 (位置7 - 正對面) */
+        .pos-7 { transform: rotate(90deg) translate(300px) rotate(-90deg) translate(-50%, -50%); }
+        /* 7點鐘 (位置8) */
+        .pos-8 { transform: rotate(120deg) translate(300px) rotate(-120deg) translate(-50%, -50%); }
+        /* 8點鐘 (位置9) */
+        .pos-9 { transform: rotate(150deg) translate(300px) rotate(-150deg) translate(-50%, -50%); }
+        /* 9點鐘 (位置10) */
+        .pos-10 { transform: rotate(180deg) translate(300px) rotate(-180deg) translate(-50%, -50%); }
+        /* 10點鐘 (位置11) */
+        .pos-11 { transform: rotate(210deg) translate(300px) rotate(-210deg) translate(-50%, -50%); }
+        /* 11點鐘 (位置12) */
+        .pos-12 { transform: rotate(240deg) translate(300px) rotate(-240deg) translate(-50%, -50%); }
+
+        /* 列印設定 */
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .canvas { box-shadow: none; border: none; width: 100%; height: 100%; }
+            /* 隱藏提示文字 */
+            .hint { display: none; }
+        }
+
+        .hint {
+            position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white;
+            padding: 10px; border-radius: 5px; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hint">💡 提示：直接點擊圓圈裡的文字即可修改！改完按 Ctrl+P 列印。</div>
+
+    <div class="canvas">
+        <div class="stage">舞 台</div>
+        
+        <div class="main-table">主 桌</div>
+<div class="seat-container">
+    <div class="seat pos-1" contenteditable="true">
+        <div>交通部航港局</div>
+        <div>葉協隆<br>局長</div>
+    </div>
+
+    <div class="seat pos-2" contenteditable="true">
+        <div>港警總隊</div>
+        <div>廖國政<br>總隊長</div>
+    </div>
+
+    <div class="seat pos-3" contenteditable="true">
+        <div>疾病管制署高屏管區管制中心</div>
+        <div>王任鑫<br>主任</div>
+    </div>
+
+    <div class="seat pos-4" contenteditable="true">
+        <div>港務消防大隊</div>
+        <div>戴國仰<br>副大隊長</div>
+    </div>
+
+    <div class="seat pos-5" contenteditable="true">
+        <div>驗船中心</div>
+        <div>高世榮<br>處長</div>
+    </div>
+
+    <div class="seat pos-6" contenteditable="true">
+        <div>輪船公會</div>
+        <div>吳岳峯<br>理事長</div>
+    </div>
+
+    <div class="seat pos-7" contenteditable="true">
+        <div>南部航務中心</div>
+        <div>張博彥<br>主任</div>
+    </div>
+
+    <div class="seat pos-8" contenteditable="true">
+        <div>前主秘</div>
+        <div>余建勳<br></div>
+    </div>
+
+    <div class="seat pos-9" contenteditable="true">
+        <div>裝卸公會</div>
+        <div>黃德成<br>理事長</div>
+    </div>
+
+    <div class="seat pos-10" contenteditable="true">
+        <div>引水人辦事處</div>
+        <div>陳策勤<br>主任</div>
+    </div>
+
+    <div class="seat pos-11" contenteditable="true">
+        <div>倉庫公會</div>
+        <div>駱啟明<br>理事長</div>
+    </div>
+
+    <div class="seat pos-12" contenteditable="true">
+        <div>船代公會</div>
+        <div>顏銘傳<br>理事長</div>
+    </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
