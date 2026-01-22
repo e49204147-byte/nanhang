@@ -58,8 +58,8 @@
         }
         .vip-list {
             font-size: 14px; font-weight: bold; line-height: 1.6; color: #333;
-            width: 320px; /* 大幅加寬以容納長職稱 */
-            white-space: nowrap; /* 強制不換行 */
+            width: 320px; 
+            white-space: nowrap; 
         }
         .vip-list.left { text-align: right; border-right: 3px solid #ddd; padding-right: 15px; }
         .vip-list.right { text-align: left; border-left: 3px solid #ddd; padding-left: 15px; }
@@ -95,21 +95,58 @@
         th { background: #f9f9f9; font-weight: 900; }
         .notice-text { color: #d32f2f; font-weight: 900; margin: 10px 0; font-size: 15px; }
 
+        /* --- 列印專用設定 (修正切邊問題) --- */
         @media print {
-            @page { size: A3 portrait; margin: 5mm; }
-            body, html { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; background: white; }
-            .admin-panel, .expand-btn, button, .summary-panel, .options-box { display: none !important; }
-            .chart-container { display: block; height: 100%; width: 100%; overflow: hidden; }
-            .canvas { 
-                width: 98% !important; height: 98vh !important; 
-                border: none !important; box-shadow: none !important; 
-                margin: 0 auto !important; padding: 10px !important;
-                display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-                transform: none !important; zoom: 1.45; 
-                background: white !important;
+            @page { 
+                size: A3 portrait; /* A3 直向 */
+                margin: 5mm; 
             }
-            .top-row, .main-layout, .bottom-row, .footer { width: 100%; max-width: 1000px; }
-            .main-vip-wrapper { margin-bottom: 20px; }
+            body, html { 
+                height: 100%; width: 100%; 
+                margin: 0; padding: 0; 
+                overflow: hidden; 
+                background: white !important; 
+                -webkit-print-color-adjust: exact; /* 強制列印背景色 */
+                print-color-adjust: exact;
+            }
+            
+            /* 隱藏不需要的元件 */
+            .admin-panel, .expand-btn, button, .summary-panel, .options-box { display: none !important; }
+            
+            .chart-container { 
+                display: block; 
+                width: 100%; 
+                height: auto; 
+                overflow: visible; 
+            }
+            
+            .canvas { 
+                /* 關鍵修正：取消固定寬度，改用縮放 */
+                width: 100% !important; 
+                height: auto !important;
+                border: none !important; 
+                box-shadow: none !important; 
+                margin: 0 auto !important; 
+                padding: 10px !important;
+                background: white !important;
+                
+                /* 縮放技巧 */
+                transform: scale(0.9); /* 稍微縮小以適應邊界 */
+                transform-origin: top center;
+                /* zoom: 1.35; */ /* zoom 在某些瀏覽器會有問題，建議用 transform */
+            }
+            
+            /* 避免被切斷 */
+            .main-vip-wrapper, .guest-grid, .table-circle {
+                page-break-inside: avoid;
+            }
+            
+            .top-row, .main-layout, .bottom-row, .footer { 
+                width: 100%; 
+                max-width: 1000px; 
+                margin-left: auto; 
+                margin-right: auto;
+            }
             .bottom-row { margin-top: 20px; }
             .footer { margin-top: 20px; padding-top: 15px; }
         }
@@ -127,7 +164,7 @@
 主任張博彥,主
 疾病管制署高屏區管制中心主任王任鑫,主
 高雄港警總隊總隊長廖國政,主
-港務消防大隊副大隊長戴國仰,主
+消防署港務消防大隊副大隊長戴國仰,主
 高雄市國際輪船商業同業公會理事長吳岳峯,主
 高雄市倉庫商業同業公會理事長駱啟明,主
 高雄市船舶貨物裝卸承攬商業同業公會理事長黃德成,主
@@ -287,7 +324,7 @@ CR驗船中心,2
                     <div class="table-circle"><b>第 2 桌</b><div class="unit-list" id="map-2"></div></div>
                     <div class="table-circle"><b>第 3 桌</b><div class="unit-list" id="map-3"></div></div>
                     <div class="table-circle"><b>第 4 桌</b><div class="unit-list" id="map-4"></div></div>
-            
+                
                     <div class="table-circle"><b>第 5 桌</b><div class="unit-list" id="map-5"></div></div>
                     <div class="table-circle"><b>第 6 桌</b><div class="unit-list" id="map-6"></div></div>
                     <div class="table-circle"><b>第 7 桌</b><div class="unit-list" id="map-7"></div></div>
